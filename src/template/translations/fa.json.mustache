@@ -69,9 +69,9 @@
     "{{main.name.singular.kebab}}": {
       {{#isComplex}}
         "tabs": {
-          "{{main.name.singular.kebab}}": "{{main.label.singular}}",
+          "{{main.name.singular.kebab}}": "{{main.label.singular}}"
           {{#children}}
-            "{{name.plural.kebab}}": "{{label.plural}}"
+            ,"{{name.plural.kebab}}": "{{label.plural}}"
           {{/children}}
         },
       {{/isComplex}}
@@ -120,7 +120,7 @@
               }{{formComma}}
             {{/isForm}}
           {{/table.columns}}
-        }{{comma}}
+        }
       {{/children}}
     }
   }
