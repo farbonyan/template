@@ -1,0 +1,127 @@
+{
+  "pages": {
+    "{{main.name.plural.kebab}}": {
+      "title": "{{main.name.plural.title}}",
+      "table": {
+        "columns": {
+          {{#main.table.columns}}
+            {{#isTable}}
+              "{{name.kebab}}": "{{name.title}}"{{tableComma}}
+            {{/isTable}}
+          {{/main.table.columns}}
+          {{#children}}
+            , "{{name.plural.kebab}}": "{{name.plural.title}}"
+          {{/children}}
+        },
+        "aggregations": {
+          "count": "Count: {count, number}"
+        },
+        {{#main.table.table.hasSelect}}
+          "options": {
+            {{#main.table.columns}}
+              {{#isSelect}}
+                "{{name.kebab}}": {
+                  {{#options}}
+                    "{{option}}": "{{option}}"{{comma}}
+                  {{/options}}
+                }{{selectComma}}
+              {{/isSelect}}
+            {{/main.table.columns}}
+          },
+        {{/main.table.table.hasSelect}}
+        "actions": {
+          "edit": "Edit",
+          {{#main.table.tree}}
+            "add-child": "Add child",
+          {{/main.table.tree}}
+          "delete": {
+            "name": "Delete",
+            "confirmation": {
+              "title": "Delete {name}",
+              "message": "Are you sure you want to delete \"{name}\"?",
+              "yes": "Yes",
+              "no": "No"
+            }
+          }
+        }
+      },
+      "toasts": {
+        "create": {
+          "success": "Created {{main.name.singular.nocase}} successfully",
+          "error": "Creating {{main.name.singular.nocase}} failed"
+        },
+        "update": {
+          "success": "Updated {{main.name.singular.nocase}} details successfully",
+          "error": "Updating {{main.name.singular.nocase}} details failed"
+        },
+        "delete": {
+          "success": "Deleted {{main.name.singular.nocase}} successfully",
+          "error": "Deleting {{main.name.singular.nocase}} failed"
+        }
+      },
+      "single": {
+        "create-title": "Create new {{main.name.singular.nocase}}",
+        "update-title": "Update {{main.name.singular.nocase}} \"{name}\""
+      }
+    }
+  },
+  "forms": {
+    "{{main.name.singular.kebab}}": {
+      {{#isComplex}}
+        "tabs": {
+          "{{main.name.singular.kebab}}": "{{main.name.singular.title}}",
+          {{#children}}
+            "{{name.plural.kebab}}": "{{name.plural.title}}"
+          {{/children}}
+        },
+      {{/isComplex}}
+      {{#main.table.columns}}
+        {{#isForm}}
+          "{{name.kebab}}": {
+            "label": "{{name.title}}",
+            {{#isSelect}}
+              "options": {
+                {{#options}}
+                  "{{option}}": "{{option}}"{{comma}}
+                {{/options}}
+              },
+            {{/isSelect}}
+            {{#isBoolean}}
+              "description": "{{name.nocase}}"
+            {{/isBoolean}}
+            {{^isBoolean}}
+              "placeholder": "Please enter {{name.nocase}}"
+            {{/isBoolean}}
+          }{{formComma}}
+        {{/isForm}}
+      {{/main.table.columns}}
+      {{#children}}
+        , "{{name.plural.kebab}}": {
+          "label": "{{name.plural.title}}"
+        },
+        "{{name.singular.kebab}}": {
+          {{#table.columns}}
+            {{#isForm}}
+              "{{name.kebab}}": {
+                "label": "{{name.title}}",
+                {{#isSelect}}
+                  "options": {
+                    {{#options}}
+                      "{{option}}": "{{option}}"{{comma}}
+                    {{/options}}
+                  },
+                {{/isSelect}}
+                {{#isBoolean}}
+                  "description": "{{name.nocase}}"
+                {{/isBoolean}}
+                {{^isBoolean}}
+                  "placeholder": "Please enter {{name.nocase}}"
+                {{/isBoolean}}
+              }{{formComma}}
+            {{/isForm}}
+          {{/table.columns}}
+        }{{comma}}
+      {{/children}}
+    }
+  }
+}

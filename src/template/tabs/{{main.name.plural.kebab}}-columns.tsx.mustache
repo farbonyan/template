@@ -1,0 +1,169 @@
+"use client";
+
+import * as React from "react";
+{{#main.table.hasBoolean}}
+  import { CheckIcon, XIcon } from "lucide-react";
+{{/main.table.hasBoolean}}
+{{#main.table.tree}}
+  import { MinusSquareIcon, PlusSquareIcon, SquareDotIcon } from "lucide-react";
+  import { cn } from "~/lib/utils";
+{{/main.table.tree}}
+import { useFormatter, useTranslations } from "next-intl";
+
+import type { Columns } from "~/components/data-table";
+import type { RouterOutputs } from "~/trpc/react";
+
+export const defaultColumnVisibility = {
+  {{#main.table.columns}}
+    {{#isHide}}
+      {{name.camel}}: false,
+    {{/isHide}}
+  {{/main.table.columns}}
+};
+
+export const defaultGrouping = [
+  {{#main.table.columns}}
+    {{#isGrouped}}
+      "{{name.camel}}",
+    {{/isGrouped}}
+  {{/main.table.columns}}
+];
+
+export const use{{main.name.plural.pascal}}Columns = () => {
+  const t = useTranslations("pages.{{main.name.plural.kebab}}");
+  const formatter = useFormatter();
+
+  return React.useMemo<Columns<RouterOutputs["{{main.name.singular.camel}}"]["all"][number]>>(
+    () => [
+      {{#main.table.columns}}
+        {{#isTable}}
+          {{^isParent}}
+            {
+              id: "{{name.camel}}",
+              header: t("table.columns.{{name.kebab}}"),
+              {{#isText}}
+                accessorFn: row => row.{{name.camel}},
+                filterFn: "text",
+                enableGlobalFilter: {{#isSearch}}true{{/isSearch}}{{^isSearch}}false{{/isSearch}},
+                enableGrouping: false,
+                {{#isTitle}}
+                  {{#main.table.tree}}
+                    cell: ({ getValue, row }) => {
+                      const name = getValue<string>();
+                      const expandable = row.getCanExpand();
+                      const Icon = expandable
+                        ? row.getIsExpanded()
+                          ? MinusSquareIcon
+                          : PlusSquareIcon
+                        : SquareDotIcon;
+                      return (
+                        <div
+                          className="flex items-center gap-2"
+                          style={ { margin: `0 ${row.depth}rem` } }
+                        >
+                          <Icon
+                            className={cn(
+                              "size-4 shrink-0",
+                              expandable && "cursor-pointer",
+                            )}
+                            onClick={(e) => {
+                              if (!expandable) return;
+                              e.stopPropagation();
+                              row.toggleExpanded();
+                            }}
+                          />
+                          <span className="text-nowrap">{name}</span>
+                        </div>
+                      );
+                    },
+                  {{/main.table.tree}}
+                  aggregationFn: "count",
+                  aggregatedCell: ({ getValue }) => {
+                    return t("table.aggregations.count", { count: getValue<number>() });
+                  },
+                  footer: ({ table }) => {
+                    const count = table.getFilteredRowModel().flatRows.length;
+                    return t("table.aggregations.count", { count });
+                  },
+                  card: { disableFooterLabel: true },
+                {{/isTitle}}
+                {{^isTitle}}
+                  aggregationFn: undefined,
+                {{/isTitle}}
+              {{/isText}}
+              {{#isSelect}}
+                accessorFn: row => t(`table.options.{{name.kebab}}.${row.{{name.camel}}}`),
+                filterFn: "select",
+                aggregationFn: undefined,
+                enableGlobalFilter: {{#isSearch}}true{{/isSearch}}{{^isSearch}}false{{/isSearch}},
+                enableGrouping: true,
+              {{/isSelect}}
+              {{#isDate}}
+                accessorFn: row => row.{{name.camel}},
+                filterFn: "date",
+                aggregationFn: undefined,
+                enableGrouping: false,
+                {{#isDateTime}}
+                  cell: ({ getValue }) => {
+                    const value = getValue<Date | null>();
+                    if (!value) return null;
+                    const date = formatter.dateTime(value, "date");
+                    const time = formatter.dateTime(value, "time");
+                    return `${time} - ${date}`;
+                  },
+                {{/isDateTime}}
+                {{#isDateOnly}}
+                  cell: ({ getValue }) => {
+                    const value = getValue<Date | null>();
+                    if (!value) return null;
+                    return formatter.dateTime(value, "date");
+                  },
+                {{/isDateOnly}}
+              {{/isDate}}
+              {{#isNumber}}
+                accessorFn: row => row.{{name.camel}},
+                filterFn: "number",
+                enableGrouping: false,
+                cell: ({ getValue }) => {
+                  const value = getValue<number | bigint>();
+                  return formatter.number(value {{#isNotGrouped}}, { useGrouping: false } {{/isNotGrouped}} );
+                },
+                {{^isPrimary}}
+                  {{^isRelation}}
+                    aggregationFn: "sum",
+                    aggregatedCell: ({ getValue }) => {
+                      return formatter.number(getValue<number | bigint>());
+                    },
+                    footer: ({ table }) => {
+                      const sum = table.getFilteredRowModel().flatRows.reduce((pre, cur) => pre + cur.original.{{name.camel}}, 0{{#isBigInt}}n{{/isBigInt}});
+                      return formatter.number(sum);
+                    },
+                  {{/isRelation}}
+                {{/isPrimary}}
+                {{#isPrimary}}
+                  aggregationFn: undefined,
+                {{/isPrimary}}
+                {{#isRelation}}
+                  aggregationFn: undefined,
+                {{/isRelation}}
+              {{/isNumber}}
+              {{#isBoolean}}
+                accessorFn: row => row.{{name.camel}},
+                aggregationFn: undefined,
+                enableGrouping: true,
+                cell: ({ getValue }) => {
+                  return getValue<boolean>() ? (
+                    <CheckIcon className="size-4" />
+                  ) : (
+                    <XIcon className="size-4" />
+                  );
+                },
+              {{/isBoolean}}
+            },
+          {{/isParent}}
+        {{/isTable}}
+      {{/main.table.columns}}
+    ],
+    [t, formatter],
+  );
+};

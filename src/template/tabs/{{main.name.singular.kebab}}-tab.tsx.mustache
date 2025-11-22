@@ -1,0 +1,149 @@
+import * as React from "react";
+import { useTranslations } from "next-intl";
+import { z } from "~/lib/zod";
+
+import { {{main.name.singular.pascal}}Form } from "~/components/forms/{{main.name.singular.kebab}}";
+import { toast } from "~/components/ui/toast";
+import { useTabInstance } from "~/contexts/tab-manager";
+import { api } from "~/trpc/react";
+
+export const {{main.name.singular.camel}}TabProps = z.object({
+  {{main.name.singular.camel}}: z
+    .object({
+      id: z.string(),
+      name: z.string().trim().min(1),
+    })
+    .optional(),
+  {{#main.table.tree}}
+    parent: z
+      .object({
+        id: z.string(),
+        name: z.string().trim().min(1),
+      })
+      .optional(),
+  {{/main.table.tree}}
+});
+
+export type {{main.name.singular.pascal}}TabProps = z.infer<typeof {{main.name.singular.camel}}TabProps>;
+
+/**
+ * {{main.name.singular.title}}'s single tab
+ */
+export const {{main.name.singular.pascal}}Tab = ({
+  {{main.name.singular.camel}},
+  {{#main.table.tree}}
+    parent,
+  {{/main.table.tree}}
+}: {{main.name.singular.pascal}}TabProps) => {
+  const t = useTranslations("pages.{{main.name.plural.kebab}}");
+  const { closeSelf } = useTabInstance();
+  const utils = api.useUtils();
+  const get{{main.name.singular.pascal}}Query = api.{{main.name.singular.camel}}.single.useQuery({{main.name.singular.camel}}?.id ?? "", {
+    enabled: !!{{main.name.singular.camel}},
+    refetchOnWindowFocus: false,
+  });
+  {{#main.table.columns}}
+    {{#isForm}}
+      {{#isRelation}}
+        const get{{relation.table.pascal}}DropdownQuery = api.{{relation.table.camel}}.dropdown.useQuery();
+      {{/isRelation}}
+    {{/isForm}}
+  {{/main.table.columns}}
+  {{#children}}
+    {{#table.columns}}
+      {{#isForm}}
+        {{#isRelation}}
+          const get{{relation.table.pascal}}DropdownQuery = api.{{relation.table.camel}}.dropdown.useQuery();
+        {{/isRelation}}
+      {{/isForm}}
+    {{/table.columns}}
+  {{/children}}
+  const create{{main.name.singular.pascal}}Mutation = api.{{main.name.singular.camel}}.create.useMutation({
+    onSuccess: async (data) => {
+      toast.success(t("toasts.create.success"));
+      await utils.{{main.name.singular.camel}}.all.invalidate();
+      closeSelf(data.{{main.table.specialColumns.primary.name.camel}});
+    },
+    onError: () => {
+      toast.error(t("toasts.create.error"));
+    },
+  });
+  const update{{main.name.singular.pascal}}Mutation = api.{{main.name.singular.camel}}.update.useMutation({
+    onSuccess: async (data) => {
+      toast.success(t("toasts.update.success"));
+      await Promise.all([
+        utils.{{main.name.singular.camel}}.all.invalidate(),
+        utils.{{main.name.singular.camel}}.single.invalidate(data.{{main.table.specialColumns.primary.name.camel}}),
+      ]);
+      closeSelf(data.{{main.table.specialColumns.primary.name.camel}});
+    },
+    onError: () => {
+      toast.error(t("toasts.update.error"));
+    },
+  });
+
+  if (
+    {{#main.table.columns}}
+      {{#isForm}}
+        {{#isRelation}}
+          !get{{relation.table.pascal}}DropdownQuery.data ||
+        {{/isRelation}}
+      {{/isForm}}
+    {{/main.table.columns}}
+    {{#children}}
+      {{#table.columns}}
+        {{#isForm}}
+          {{#isRelation}}
+            !get{{relation.table.pascal}}DropdownQuery.data ||
+          {{/isRelation}}
+        {{/isForm}}
+      {{/table.columns}}
+    {{/children}}
+    get{{main.name.singular.pascal}}Query.isFetching
+  ) {
+    return null;
+  }
+
+  return (
+    <{{main.name.singular.pascal}}Form
+      loading={create{{main.name.singular.pascal}}Mutation.isPending || update{{main.name.singular.pascal}}Mutation.isPending}
+      defaultValues={get{{main.name.singular.pascal}}Query.data}
+      {{#main.table.columns}}
+        {{#isForm}}
+          {{#isRelation}}
+            {{relation.table.camel}}List={get{{relation.table.pascal}}DropdownQuery.data}
+          {{/isRelation}}
+        {{/isForm}}
+      {{/main.table.columns}}
+      {{#children}}
+        {{#table.columns}}
+          {{#isForm}}
+            {{#isRelation}}
+              {{relation.table.camel}}List={get{{relation.table.pascal}}DropdownQuery.data}
+            {{/isRelation}}
+          {{/isForm}}
+        {{/table.columns}}
+      {{/children}}
+      onSubmit={(values) => {
+        if (!get{{main.name.singular.pascal}}Query.data) {
+          {{#main.table.tree}}
+            return create{{main.name.singular.pascal}}Mutation.mutate({
+              ...values,
+              {{table.specialColumns.parent.name.camel}}: parent?.id,
+            });
+          {{/main.table.tree}}
+          {{^main.table.tree}}
+            return create{{main.name.singular.pascal}}Mutation.mutate(values);
+          {{/main.table.tree}}
+        }
+        return update{{main.name.singular.pascal}}Mutation.mutate({
+          ...values,
+          {{#main.table.tree}}
+            {{table.specialColumns.parent.name.camel}}: parent?.id,
+          {{/main.table.tree}}
+          {{main.table.specialColumns.primary.name.camel}}: get{{main.name.singular.pascal}}Query.data.{{main.table.specialColumns.primary.name.camel}},
+        });
+      }}
+    />
+  );
+};

@@ -1,0 +1,123 @@
+"use client";
+
+import * as React from "react";
+import {
+  EditIcon,
+  TrashIcon,
+  {{#main.table.tree}}
+    PlusIcon,
+  {{/main.table.tree}}
+} from "lucide-react";
+import { useTranslations } from "next-intl";
+
+import type { RowAction } from "~/components/data-table";
+import type { RouterOutputs } from "~/trpc/react";
+import { DataTable } from "~/components/data-table";
+import { toast } from "~/components/ui/toast";
+import { useConfirmation } from "~/contexts/confirmation";
+import { useTabOpener } from "~/contexts/tab-manager";
+import { api } from "~/trpc/react";
+import { defaultColumnVisibility, defaultGrouping, use{{main.name.plural.pascal}}Columns } from "./{{main.name.plural.kebab}}-columns";
+import { {{main.name.plural.pascal}}LoadingTab } from "./{{main.name.plural.kebab}}-loading-tab";
+
+export const {{main.name.plural.pascal}}Tab = () => {
+  const t = useTranslations("pages.{{main.name.plural.kebab}}");
+  const openTab = useTabOpener();
+  const { confirm } = useConfirmation();
+  const get{{main.name.plural.pascal}}Query = api.{{main.name.singular.camel}}.all.useQuery(undefined, {
+    refetchOnReconnect: false,
+    refetchOnWindowFocus: false,
+  });
+  const delete{{main.name.singular.pascal}}Mutation = api.{{main.name.singular.camel}}.delete.useMutation({
+    onSuccess: () => {
+      toast.success(t("toasts.delete.success"));
+      return get{{main.name.plural.pascal}}Query.refetch();
+    },
+    onError: () => {
+      toast.error(t("toasts.delete.error"));
+    },
+  });
+  const columns = use{{main.name.plural.pascal}}Columns();
+
+  const rowActions = React.useMemo<
+    RowAction<RouterOutputs["{{main.name.singular.camel}}"]["all"][number]>[]
+  >(() => {
+    return [
+      {
+        primary: true,
+        name: t("table.actions.edit"),
+        icon: EditIcon,
+        onClick: (row) => {
+          void openTab("{{main.name.plural.camel}}.single", {
+            {{main.name.singular.camel}}: {
+              id: row.original.{{main.table.specialColumns.primary.name.camel}},
+              name: row.original.{{main.table.specialColumns.title.name.camel}},
+            },
+          });
+        },
+      },
+      {{#main.table.tree}}
+        {
+          name: t("table.actions.add-child"),
+          icon: PlusIcon,
+          onClick: (row) => {
+            void openTab("{{main.name.plural.camel}}.single", {
+              parent: {
+                id: row.original.{{main.table.specialColumns.primary.name.camel}},
+                name: row.original.{{main.table.specialColumns.title.name.camel}},
+              },
+            });
+          },
+        },
+      {{/main.table.tree}}
+      {
+        name: t("table.actions.delete.name"),
+        icon: TrashIcon,
+        onClick: (row) => {
+          confirm({
+            title: t("table.actions.delete.confirmation.title", {
+              name: row.original.{{main.table.specialColumns.title.name.camel}},
+            }),
+            message: t("table.actions.delete.confirmation.message", {
+              name: row.original.{{main.table.specialColumns.title.name.camel}},
+            }),
+            buttons: [
+              {
+                label: t("table.actions.delete.confirmation.no"),
+                variant: "outline",
+              },
+              {
+                label: t("table.actions.delete.confirmation.yes"),
+                variant: "destructive",
+                onClick: () => delete{{main.name.singular.pascal}}Mutation.mutate(row.original.{{main.table.specialColumns.primary.name.camel}}),
+              },
+            ],
+          });
+        },
+      },
+    ];
+  }, [t, openTab, confirm, delete{{main.name.singular.pascal}}Mutation]);
+
+  if (!get{{main.name.plural.pascal}}Query.data) {
+    return <{{main.name.plural.pascal}}LoadingTab />;
+  }
+
+  return (
+    <DataTable
+      data={get{{main.name.plural.pascal}}Query.data}
+      getRowId={row => row.{{main.table.specialColumns.primary.name.camel}}}
+      {{#main.table.tree}}
+        getSubRows={(row) => row._children}
+      {{/main.table.tree}}
+      columns={columns}
+      settingsKey="{{name.plural.kebab}}"
+      enableRowSelection={false}
+      rowActions={rowActions}
+      onCreate={() => openTab("{{main.name.plural.camel}}.single", {})}
+      isRefreshing={get{{main.name.plural.pascal}}Query.isRefetching}
+      onRefresh={() => get{{main.name.plural.pascal}}Query.refetch()}
+      defaultColumnVisibility={defaultColumnVisibility}
+      defaultGrouping={defaultGrouping}
+    />
+  );
+};

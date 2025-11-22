@@ -1,0 +1,19 @@
+services:
+  app:
+    build:
+      context: app
+      dockerfile: Dockerfile
+    volumes:
+      - db:prisma/database.db
+    ports:
+      - "3000:3000"
+    env_file:
+      - .env
+    networks:
+      - app
+
+networks:
+  app:
+
+volumes:
+  db:

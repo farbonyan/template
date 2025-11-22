@@ -1,0 +1,20 @@
+"use client";
+
+import * as React from "react";
+
+import { DataTableSkeleton } from "~/components/data-table";
+import { defaultColumnVisibility, use{{main.name.plural.pascal}}Columns } from "./{{main.name.plural.kebab}}-columns";
+
+/**
+ * {{main.name.plural.title}} loading page
+ */
+export const {{main.name.plural.pascal}}LoadingTab = () => {
+  const columns = use{{main.name.plural.pascal}}Columns();
+
+  return (
+    <DataTableSkeleton
+      columns={columns}
+      defaultColumnVisibility={defaultColumnVisibility}
+    />
+  );
+};

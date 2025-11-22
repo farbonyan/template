@@ -1,0 +1,331 @@
+{
+  "global": {
+    "app-name": "Project Management"
+  },
+  "pages": {
+    "error": {
+      "title": "Something went wrong!",
+      "description": "Something went wrong!",
+      "return": "Return",
+      "try-again": "Try again",
+      "offline": "You are offline, some features may not work properly.",
+      "online": "You are Online, Welcome Back!"
+    },
+    "not-found": {
+      "title": "Not Found!",
+      "description": "Not Found!",
+      "return": "Return"
+    },
+    "login": {
+      "title": "Signin",
+      "invalid-credentials": "Invalid credentials"
+    },
+    "index": {
+      "title": "Dashboard",
+      "header": {
+        "title": "Menu",
+        "locales": {
+          "fa": "فا",
+          "en": "En"
+        },
+        "customize": {
+          "title": "Customization",
+          "theme": {
+            "title": "Theme",
+            "dark": "Dark",
+            "light": "Light",
+            "system": "System"
+          },
+          "menu": {
+            "title": "Display Menu",
+            "slider": "Slider",
+            "sticky": "Sticky"
+          },
+          "toast": {
+            "title": "Toast position",
+            "positions": {
+              "top-left": "Top Left",
+              "top-right": "Top Right",
+              "bottom-left": "Bottom Left",
+              "bottom-right": "Bottom Right",
+              "top-center": "Top Center",
+              "bottom-center": "Bottom Center"
+            }
+          },
+          "locale": {
+            "title": "Locale",
+            "fa": "فا",
+            "en": "EN"
+          },
+          "widgets": {
+            "edit": "Edit Widgets"
+          }
+        },
+        "menu": {
+          "placeholder": "Search menu items",
+          "sign-out": "Sign out"
+        }
+      }
+    },
+    "dashboard": {
+      "widgets": {
+        "custom-widgets": "Customized",
+        "drop-here-to-add": "Drag widgets and drop here",
+        "drop-here-to-remove": "Drag widgets and drop here to remove them from list"
+      }
+    },
+    "template": {
+      "title": "Create Template",
+      "toasts": {
+        "create": {
+          "success": "Created template successfully",
+          "error": "Creating template failed"
+        }
+      }
+    }
+  },
+  "forms": {
+    "wrapper": {
+      "print": "Print",
+      "submit": "Submit"
+    },
+    "login": {
+      "username": "username",
+      "password": "password",
+      "submit": "Submit"
+    },
+    "template": {
+      "tabs": {
+        "base": "Base",
+        "sub-table": "Sub Table {index, number}"
+      },
+      "icon": {
+        "label": "Icon",
+        "placeholder": "Please choose icon"
+      },
+      "name": {
+        "label": "Name",
+        "placeholder": "Please enter name"
+      },
+      "label": {
+        "label": "Label",
+        "placeholder": "Please enter label"
+      },
+      "singular": {
+        "label": "Singular",
+        "placeholder": "Please enter singular"
+      },
+      "plural": {
+        "label": "Plural",
+        "placeholder": "Please enter plural"
+      },
+      "table": {
+        "label": "Table",
+        "placeholder": "Please choose table"
+      },
+      "related": {
+        "label": "Related Field",
+        "placeholder": "Please choose related field"
+      },
+      "columns": {
+        "label": "Columns"
+      },
+      "column": {
+        "name": "Name",
+        "label": "Label",
+        "special": "Special",
+        "optional": "Optional",
+        "related": "Related Field",
+        "visual": "Visual",
+        "table": "Table",
+        "hide": "Hide",
+        "grouped": "Grouped",
+        "search": "Search",
+        "form": "Form",
+        "type": "Type",
+        "extra": "Extra"
+      }
+    }
+  },
+  "components": {
+    "tab-manager": {
+      "tab-limit-error": "Reached max tabs"
+    },
+    "editor": {
+      "align-start": "Align Start",
+      "align-center": "Align Center",
+      "align-end": "Align End",
+      "align-justify": "Align Justify",
+      "bold": "Bold",
+      "italic": "Italic",
+      "strike": "Strike",
+      "ul-list": "Unordered List",
+      "ol-list": "Ordered List",
+      "code": "Code",
+      "quote": "Quote",
+      "media": "Multimedia",
+      "line": "Line",
+      "table": "Table",
+      "upload-error": "Uploading file failed"
+    },
+    "data-table": {
+      "options": "Options",
+      "show-details": "Show Details",
+      "show-more": "Show More",
+      "show-less": "Show Less",
+      "pagination": {
+        "go-to": "Go to",
+        "page": "Page {page, number} of {pages, number}",
+        "rows-per-page": "Rows per Page",
+        "submit": "Submit",
+        "display-rows": "{from} - {to} of {count, plural, =-1 {more than {to}} other {#}}"
+      },
+      "aggregations": {
+        "selected": "Selected: {value, number}",
+        "count": "Count: {value, number}",
+        "uniqueCount": "Count: {value, number}",
+        "sum": "{value, number}",
+        "min": "Min: {value, number}",
+        "max": "Max: {value, number}",
+        "mean": "Avg: {value, number}"
+      },
+      "header": {
+        "actions": {
+          "refresh": "Refresh",
+          "create-new": "Create New",
+          "export": "Export",
+          "export-to-excel": "Export to Excel",
+          "export-to-pdf": "Export to PDF",
+          "column-selector": "Column Selector",
+          "filter-all": "Filter all",
+          "filter-on-columns": "Filter on:",
+          "group": "Group Column",
+          "ungroup": "Ungroup Column",
+          "drag-to-group": "Drag column here to add it to grouping",
+          "zoom-to-fullscreen": "Zoom to fullscreen",
+          "undo-zoom": "Undo zoom",
+          "show-all-columns": "Show all columns",
+          "hide-overflow-columns": "Hide overflow columns",
+          "expand-all": "Expand all",
+          "collapse-all": "Collapse all",
+          "pin-right": "Pin to right",
+          "pin-left": "Pin to left",
+          "unpin-right": "Unpin from right",
+          "unpin-left": "Unpin from left",
+          "sort": {
+            "asc": "Sort Ascending",
+            "desc": "Sort Descending"
+          },
+          "filter": {
+            "hint": "Filtering",
+            "title": "Filters",
+            "clear": "Clear"
+          }
+        },
+        "filters": {
+          "text": {
+            "contains": "Contains",
+            "not-contains": "Not Contains",
+            "equals": "Equals",
+            "labels": {
+              "includesString": "Contains \"{value}\"",
+              "notIncludesString": "Not contains \"{value}\"",
+              "equalsString": "Equals \"{value}\""
+            }
+          },
+          "select": {
+            "placeholder": "Please choose",
+            "labels": {
+              "equals": "Equals \"{value}\""
+            }
+          },
+          "number": {
+            "equals": "Equals",
+            "not-equals": "Not equals",
+            "less-than": "Less Than",
+            "less-equals-than": "Less Than Or Equals",
+            "greater-than": "More Than",
+            "greater-equals-than": "More Than Or Equals",
+            "labels": {
+              "eq": "Equals \"{value, number}\"",
+              "ne": "Not equals \"{value, number}\"",
+              "lt": "Less than \"{value, number}\"",
+              "le": "Less than or equals \"{value, number}\"",
+              "gt": "More than \"{value, number}\"",
+              "ge": "More than or equals \"{value, number}\""
+            }
+          },
+          "boolean": {
+            "equals": "Equals",
+            "not-equals": "Not equals",
+            "labels": {
+              "true": "Equals \"True\"",
+              "false": "Equals \"False\""
+            }
+          },
+          "date": {
+            "choose-date": "Choose date",
+            "less-than": "Less Than",
+            "more-than": "More Than",
+            "between": "Between",
+            "labels": {
+              "less-than": "Less than \"{value, date, date}\"",
+              "more-than": "More than \"{value, date, date}\"",
+              "between": "Between \"{value1, date, date}\" and \"{value2, date, date}\""
+            }
+          }
+        }
+      }
+    },
+    "dropzone": {
+      "drag": "Drag here",
+      "drop": "Drop here",
+      "browse": "Browse files"
+    },
+    "checkbox-table": {
+      "show": "Show selected only",
+      "hide": "Show all"
+    },
+    "combobox-tree": {
+      "expand-all": "Expand All",
+      "collapse-all": "Collapse All"
+    },
+    "date-input": {
+      "today": "Today: {date, date}"
+    },
+    "multiselect": {
+      "placeholder": "Select Options",
+      "close": "Close",
+      "clear": "Clear",
+      "search": "Search",
+      "select-all": "(Select All)",
+      "empty": "Not found",
+      "more": "+ {items, number} more"
+    },
+    "simple-table": {
+      "show-more": "Show more",
+      "show-less": "Show less"
+    },
+    "scheduler": {
+      "show": "Show Events",
+      "create": "Create Event",
+      "today": "Today : {date} ({week, selectordinal, one {#st} two {#nd} few {#rd} other {#th}} week)",
+      "next": "Next month",
+      "prev": "Previous month",
+      "events": "{count, number} events",
+      "go-to-today": "Go to today",
+      "go-to-today-mobile": "Today",
+      "calendars": {
+        "arabic": "Arabic",
+        "gregory": "Gregory",
+        "indian": "Indian",
+        "persian": "Persian"
+      }
+    },
+    "dynamic-tabs": {
+      "close": "Close",
+      "close-all": "Close All",
+      "close-others": "Close Others"
+    }
+  }
+}

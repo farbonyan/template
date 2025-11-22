@@ -1,0 +1,867 @@
+import * as React from "react";
+import { useFormatter, useTranslations } from "next-intl";
+import { z } from "~/lib/zod";
+
+import type { DefaultValues } from "~/components/ui/form";
+{{#isComplex}}
+  import type { UseFormReturn } from "react-hook-form";
+  import type { DragEndEvent } from "@dnd-kit/core";
+  import { GripVerticalIcon, PlusIcon, Trash2Icon } from "lucide-react";
+  import {
+    closestCenter,
+    DndContext,
+    PointerSensor,
+    useSensor,
+    useSensors,
+  } from "@dnd-kit/core";
+  import {
+    SortableContext,
+    useSortable,
+    verticalListSortingStrategy,
+  } from "@dnd-kit/sortable";
+  import { CSS } from "@dnd-kit/utilities";
+  import { ScrollArea, ScrollBar } from "~/components/ui/scroll-area";
+  import {
+    Table,
+    TableBody,
+    TableCell,
+    TableHead,
+    TableHeader,
+    TableRow,
+  } from "~/components/ui/table";
+  import { Button } from "~/components/ui/button";
+{{/isComplex}}
+import { FormWrapper } from "~/components/forms/form-wrapper";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+  useForm,
+  {{#main.table.form.hasSwitch}}
+    FormDescription,
+  {{/main.table.form.hasSwitch}}
+  {{#isComplex}}
+    useFieldArray,
+  {{/isComplex}}
+} from "~/components/ui/form";
+{{#isComplex}}
+  import {
+    Tabs,
+    TabsContent,
+    TabsList,
+    TabsTrigger,
+  } from "~/components/ui/vertical-tabs";
+{{/isComplex}}
+{{#main.table.form.hasText}}
+  import { TextInput } from "~/components/ui/text-input";
+{{/main.table.form.hasText}}
+{{#main.table.form.hasNumber}}
+  import { NumberInput } from "~/components/ui/number-input";
+{{/main.table.form.hasNumber}}
+{{#main.table.form.hasDate}}
+  import { DateInput } from "~/components/ui/date-input";
+{{/main.table.form.hasDate}}
+{{#main.table.form.hasCheckbox}}
+  import { Label } from "~/components/ui/label";
+  import { Checkbox } from "~/components/ui/checkbox";
+{{/main.table.form.hasCheckbox}}
+{{#main.table.form.hasSwitch}}
+  import { Switch } from "~/components/ui/switch";
+{{/main.table.form.hasSwitch}}
+{{#main.table.form.hasRelation}}
+  import { Combobox } from "~/components/ui/combobox";
+{{/main.table.form.hasRelation}}
+{{#main.table.form.hasSelect}}
+  import {
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
+  } from "~/components/ui/select";
+{{/main.table.form.hasSelect}}
+
+
+export const {{main.name.singular.camel}}Schema = z.object({
+  {{#main.table.columns}}
+    {{^isPrimary}}
+      {{#isForm}}
+        {{name.camel}}:
+        {{#isText}}
+          z.string().trim().min(1)
+        {{/isText}}
+        {{#isSelect}}
+          z.enum([
+            {{#options}}
+            "{{option}}",
+            {{/options}}
+          ])
+        {{/isSelect}}
+        {{#isFloat}}
+          z.number()
+        {{/isFloat}}
+        {{#isInt}}
+          z.number().int()
+        {{/isInt}}
+        {{#isBigInt}}
+          z.bigint()
+        {{/isBigInt}}
+        {{#isDate}}
+          z.coerce.date()
+        {{/isDate}}
+        {{#isBoolean}}
+          z.boolean()
+        {{/isBoolean}}
+        {{#isRelation}}
+          z.string()
+        {{/isRelation}}
+          {{#isOptional}}
+            .nullish(),
+          {{/isOptional}}
+          {{^isOptional}}
+            ,
+          {{/isOptional}}
+      {{/isForm}}
+    {{/isPrimary}}
+  {{/main.table.columns}}
+  {{#main.table.tree}}
+    {{main.table.specialColumns.parent.name.camel}}: z
+      .string()
+      .nullish(),
+  {{/main.table.tree}}
+  {{#children}}
+    {{name.plural.camel}}: z.object({
+      {{#table.columns}}
+        {{^isPrimary}}
+          {{#isForm}}
+            {{name.camel}}:
+            {{#isText}}
+              z.string().trim().min(1)
+            {{/isText}}
+            {{#isSelect}}
+              z.enum([
+                {{#options}}
+                "{{option}}",
+                {{/options}}
+              ])
+            {{/isSelect}}
+            {{#isFloat}}
+              z.number()
+            {{/isFloat}}
+            {{#isInt}}
+              z.number().int()
+            {{/isInt}}
+            {{#isBigInt}}
+              z.bigint()
+            {{/isBigInt}}
+            {{#isDate}}
+              z.coerce.date()
+            {{/isDate}}
+            {{#isBoolean}}
+              z.boolean()
+            {{/isBoolean}}
+            {{#isRelation}}
+              z.string()
+            {{/isRelation}}
+              {{#isOptional}}
+                .nullish(),
+              {{/isOptional}}
+              {{^isOptional}}
+                ,
+              {{/isOptional}}
+          {{/isForm}}
+        {{/isPrimary}}
+      {{/table.columns}}
+      {{#table.tree}}
+        {{table.specialColumns.parent.name.camel}}: z
+          .string()
+          .nullish(),
+      {{/table.tree}}
+    })
+    {{#table.form.hasRelated}}
+      .superRefine((arg, ctx) => {
+        {{#table.columns}}
+          {{#isRelated}}
+          if (arg.{{related.field.camel}} === "{{related.value}}" && arg.{{name.camel}} == null) {
+            ctx.addIssue({
+              code: "invalid_type",
+              expected: "{{type}}",
+              received: "null",
+              path: ["{{name.camel}}"],
+            });
+          }
+          {{/isRelated}}
+        {{/table.columns}}
+      })
+    {{/table.form.hasRelated}}
+    .array(),
+  {{/children}}
+})
+{{#main.table.form.hasRelated}}
+  .superRefine((arg, ctx) => {
+    {{#main.table.columns}}
+      {{#isRelated}}
+      if (arg.{{related.field.camel}} === "{{related.value}}" && arg.{{name.camel}} == null) {
+        ctx.addIssue({
+          code: "invalid_type",
+          expected: "{{type}}",
+          received: "null",
+          path: ["{{name.camel}}"],
+        });
+      }
+      {{/isRelated}}
+    {{/main.table.columns}}
+  })
+{{/main.table.form.hasRelated}}
+
+export type {{main.name.singular.pascal}}Schema = z.infer<typeof {{main.name.singular.camel}}Schema>;
+
+{{#children}}
+  type {{name.singular.pascal}}RowProps = {
+    id: string;
+    index: number;
+    form: UseFormReturn<{{main.name.singular.pascal}}Schema>;
+    {{#table.columns}}
+      {{#isForm}}
+        {{#isRelation}}
+          {{relation.table.camel}}List: { id: string, content: string }[];
+        {{/isRelation}}
+      {{/isForm}}
+    {{/table.columns}}
+    onDelete: () => void;
+  }
+
+  const {{name.singular.pascal}}Row = ({
+      id,
+      index,
+      form,
+      {{#table.columns}}
+        {{#isForm}}
+          {{#isRelation}}
+            {{relation.table.camel}}List,
+          {{/isRelation}}
+        {{/isForm}}
+      {{/table.columns}}
+      onDelete
+    }: {{name.singular.pascal}}RowProps) => {
+    const t = useTranslations("forms.{{main.name.singular.kebab}}");
+    const { attributes, listeners, setNodeRef, transform, transition } = useSortable({ id });
+
+    const style = {
+      transform: CSS.Transform.toString(transform),
+      transition,
+    };
+
+    return (
+      <TableRow ref={setNodeRef} style={style} className="h-px" {...attributes}>
+        <TableCell className="w-0 cursor-grab" {...listeners}>
+          <GripVerticalIcon className="size-4 text-muted-foreground" />
+        </TableCell>
+        <TableCell className="w-0">
+          <Button type="button" size="icon" variant="destructive" className="size-6" onClick={onDelete}>
+            <Trash2Icon className="size-4" />
+          </Button>
+        </TableCell>
+        {{#table.columns}}
+          {{#isForm}}
+            <TableCell>
+              {{#isRelated}}
+                { {{related.field.camel}} === "{{related.value}}" && (
+              {{/isRelated}}
+              {{#isText}}
+                <FormField
+                  control={form.control}
+                  name={`{{name.plural.camel}}.${index}.{{name.camel}}`}
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormControl>
+                        <TextInput {...field} placeholder={t("{{name.singular.kebab}}.{{name.kebab}}.placeholder")} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              {{/isText}}
+              {{#isSelect}}
+                <FormField
+                  control={form.control}
+                  name={`{{name.plural.camel}}.${index}.{{name.camel}}`}
+                  render={({ field: { value, onChange, ...field } }) => (
+                    <FormItem>
+                      <Select {...field} value={value} onValueChange={onChange}>
+                        <FormControl>
+                          <SelectTrigger>
+                            <SelectValue placeholder={t("{{name.singular.kebab}}.{{name.kebab}}.placeholder")} />
+                          </SelectTrigger>
+                        </FormControl>
+                        <SelectContent>
+                          {{#options}}
+                          <SelectItem value="{{option}}">{t("{{name.singular.kebab}}.{{name.kebab}}.options.{{option}}")}</SelectItem>
+                          {{/options}}
+                        </SelectContent>
+                      </Select>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              {{/isSelect}}
+              {{#isRelation}}
+                <FormField
+                  control={form.control}
+                  name={`{{name.plural.camel}}.${index}.{{name.camel}}`}
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormControl>
+                        <Combobox
+                          value={field.value}
+                          setValue={field.onChange}
+                          options={ {{relation.table.camel}}List.map(({{relation.table.camel}}) => ({
+                            value: {{relation.table.camel}}.id,
+                            label: {{relation.table.camel}}.content,
+                          }))}
+                          placeholder={t("{{name.singular.kebab}}.{{name.kebab}}.placeholder")}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              {{/isRelation}}
+              {{#isNumber}}
+                <FormField
+                  control={form.control}
+                  name={`{{name.plural.camel}}.${index}.{{name.camel}}`}
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormControl>
+                        <NumberInput {...field} placeholder={t("{{name.singular.kebab}}.{{name.kebab}}.placeholder")} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              {{/isNumber}}
+              {{#isDate}}
+                <FormField
+                  control={form.control}
+                  name={`{{name.plural.camel}}.${index}.{{name.camel}}`}
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormControl>
+                        <DateInput
+                          {{#isDateTime}}
+                            time
+                          {{/isDateTime}}
+                          value={field.value}
+                          onChange={field.onChange}
+                          placeholder={t("{{name.singular.kebab}}.{{name.kebab}}.placeholder")}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              {{/isDate}}
+              {{#isCheckbox}}
+                <FormField
+                  control={form.control}
+                  name={`{{name.plural.camel}}.${index}.{{name.camel}}`}
+                  render={({ field: { value, onChange, ...field } }) => (
+                    <FormItem>
+                      <FormControl>
+                        <Label className="flex cursor-pointer items-center gap-2 hover:bg-muted">
+                          <Checkbox
+                            {...field}
+                            checked={value}
+                            onCheckedChange={onChange}
+                          />
+                        </Label>
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              {{/isCheckbox}}
+              {{#isSwitch}}
+                <FormField
+                  control={form.control}
+                  name={`{{name.plural.camel}}.${index}.{{name.camel}}`}
+                  render={({ field: { value, onChange, ...field } }) => (
+                    <FormItem>
+                      <div className="flex h-9 items-center gap-2 space-y-0 rounded-lg border border-input-border bg-input px-4 shadow-sm">
+                        <FormControl>
+                          <Switch
+                            {...field}
+                            checked={value}
+                            onCheckedChange={onChange}
+                          />
+                        </FormControl>
+                        <FormDescription>{t("{{name.singular.kebab}}.{{name.kebab}}.description")}</FormDescription>
+                      </div>
+                    </FormItem>
+                  )}
+                />
+              {{/isSwitch}}
+              {{#isRelated}}
+                )}
+              {{/isRelated}}
+            </TableCell>
+          {{/isForm}}
+        {{/table.columns}}
+      </TableRow>
+    )
+  }
+
+  type {{name.plural.pascal}}FieldProps = {
+    form: UseFormReturn<{{main.name.singular.pascal}}Schema>;
+    {{#table.columns}}
+      {{#isForm}}
+        {{#isRelation}}
+          {{relation.table.camel}}List: { id: string, content: string }[];
+        {{/isRelation}}
+      {{/isForm}}
+    {{/table.columns}}
+  }
+
+  const {{name.plural.pascal}}Field = ({
+    form,
+    {{#table.columns}}
+      {{#isForm}}
+        {{#isRelation}}
+          {{relation.table.camel}}List,
+        {{/isRelation}}
+      {{/isForm}}
+    {{/table.columns}}
+  }: {{name.plural.pascal}}FieldProps) => {
+    const t = useTranslations("forms.{{main.name.singular.kebab}}");
+    const formatter = useFormatter();
+
+    const {{name.plural.camel}}Field = useFieldArray({
+      control: form.control,
+      name: "{{name.plural.camel}}",
+    });
+
+    const {{name.plural.camel}} = form.watch("{{name.plural.camel}}");
+
+    const sensors = useSensors(useSensor(PointerSensor));
+
+    const handleDragEnd = (event: DragEndEvent) => {
+      const { active, over } = event;
+      if (!over || active.id === over.id) return;
+
+      const oldIndex = {{name.plural.camel}}Field.fields.findIndex(
+        (item) => item.id === active.id,
+      );
+      const newIndex = {{name.plural.camel}}Field.fields.findIndex(
+        (item) => item.id === over.id,
+      );
+
+      if (oldIndex !== -1 && newIndex !== -1) {
+        {{name.plural.camel}}Field.move(oldIndex, newIndex);
+      }
+    };
+
+    {{#table.columns}}
+      {{#isRelatedTo}}
+        const {{name.camel}} = form.watch("{{name.plural.camel}}.{{name.camel}}")
+      {{/isRelatedTo}}
+    {{/table.columns}}
+
+    return (
+      <FormField
+        control={form.control}
+        name={"{{name.plural.camel}}"}
+        render={() => (
+          <FormItem className="flex h-full flex-col overflow-hidden p-1">
+            <FormLabel>{t("{{name.plural.kebab}}.label")}</FormLabel>
+            <FormControl>
+              <DndContext
+                sensors={sensors}
+                collisionDetection={closestCenter}
+                onDragEnd={handleDragEnd}
+              >
+                <ScrollArea className="flex-1 rounded border [&>div>div]:h-full">
+                  <Table className="h-full">
+                    <TableHeader className="sticky top-0 z-30 shadow-md [&_tr]:border-b-0">
+                      <TableRow>
+                        <TableHead colSpan={2}>
+                          <Button type="button" size="icon" className="size-6" onClick={() => {
+                            {{name.plural.camel}}Field.prepend({
+                              {{#table.columns}}
+                                {{#isForm}}
+                                  {{^isPrimary}}
+                                    {{#isSelect}}
+                                      {{name.camel}}: "{{firstOption}}",
+                                    {{/isSelect}}
+                                    {{#isBoolean}}
+                                      {{name.camel}}: false,
+                                    {{/isBoolean}}
+                                  {{/isPrimary}}
+                                {{/isForm}}
+                              {{/table.columns}}
+                            })
+                          }}>
+                            <PlusIcon className="size-4" />
+                          </Button>
+                        </TableHead>
+                        {{#table.columns}}
+                          {{#isForm}}
+                            <TableHead>
+                              {t("{{name.singular.kebab}}.{{name.kebab}}.label")}
+                            </TableHead>
+                          {{/isForm}}
+                        {{/table.columns}}
+                      </TableRow>
+                    </TableHeader>
+                    <SortableContext
+                      items={ {{name.plural.camel}}Field.fields.map(({{name.singular.camel}}) => {{name.singular.camel}}.id)}
+                      strategy={verticalListSortingStrategy}
+                    >
+                      <TableBody>
+                        { {{name.plural.camel}}Field.fields
+                          .map(({{name.singular.camel}}, index) => {
+                            return (
+                              <{{name.singular.pascal}}Row
+                                key={ {{name.singular.camel}}.id }
+                                id={ {{name.singular.camel}}.id }
+                                form={form}
+                                index={index}
+                                {{#table.columns}}
+                                  {{#isForm}}
+                                    {{#isRelation}}
+                                      {{relation.table.camel}}List={ {{relation.table.camel}}List }
+                                    {{/isRelation}}
+                                  {{/isForm}}
+                                {{/table.columns}}
+                                onDelete={() => {{name.plural.camel}}Field.remove(index)}
+                              />
+                            );
+                          })}
+                        <TableRow className="h-[calc(100%-1px)]"></TableRow>
+                      </TableBody>
+                    </SortableContext>
+                    <TableFooter className="sticky -bottom-px z-30 border-b-0 text-muted-foreground shadow-sm">
+                      <TableRow className="h-px border-b-0">
+                        <TableCell></TableCell>
+                        {{#table.columns}}
+                          {{#isForm}}
+                            {{#isNumber}}
+                              <TableCell>
+                                {formatter.number(
+                                  {{name.plural.camel}}.reduce(
+                                    (pre, cur) => pre + cur.{{name.camel}},
+                                    0{{#isBigInt}}n{{/isBigInt}},
+                                  )
+                                )}
+                              </TableCell>
+                            {{/isNumber}}
+                            {{^isNumber}}
+                              <TableCell></TableCell>
+                            {{/isNumber}}
+                          {{/isForm}}
+                        {{/table.columns}}
+                      </TableRow>
+                    </TableFooter>
+                  </Table>
+                  <ScrollBar orientation="horizontal" />
+                </ScrollArea>
+              </DndContext>
+            </FormControl>
+            <FormMessage />
+          </FormItem>
+        )}
+      />
+    )
+  }
+{{/children}}
+
+export type {{main.name.singular.pascal}}FormProps = {
+  /** Form loading state */
+  loading?: boolean;
+
+  {{#main.table.columns}}
+    {{#isForm}}
+      {{#isRelation}}
+        /** List of {{relation.table.nocase}} array */
+        {{relation.table.camel}}List: { id: string, content: string }[];
+
+      {{/isRelation}}
+    {{/isForm}}
+  {{/main.table.columns}}
+  {{#children}}
+    {{#table.columns}}
+      {{#isForm}}
+        {{#isRelation}}
+          /** List of {{relation.table.nocase}} array */
+          {{relation.table.camel}}List: { id: string, content: string }[];
+
+        {{/isRelation}}
+      {{/isForm}}
+    {{/table.columns}}
+  {{/children}}
+
+  /** Default {{name.singular.nocase}} of the form */
+  defaultValues?: DefaultValues<{{main.name.singular.pascal}}Schema> | null;
+
+  /** Submit handler function */
+  onSubmit: (values: {{main.name.singular.pascal}}Schema) => void;
+};
+
+/**
+ * {{main.name.singular.title}} form component
+ */
+export const {{main.name.singular.pascal}}Form = ({
+  loading,
+  {{#main.table.columns}}
+    {{#isForm}}
+      {{#isRelation}}
+        {{relation.table.camel}}List,
+      {{/isRelation}}
+    {{/isForm}}
+  {{/main.table.columns}}
+  {{#children}}
+    {{#table.columns}}
+      {{#isForm}}
+        {{#isRelation}}
+          {{relation.table.camel}}List,
+        {{/isRelation}}
+      {{/isForm}}
+    {{/table.columns}}
+  {{/children}}
+  defaultValues,
+  onSubmit,
+}: {{main.name.singular.pascal}}FormProps) => {
+  const t = useTranslations("forms.{{main.name.singular.kebab}}");
+  const form = useForm({
+    schema: {{main.name.singular.camel}}Schema,
+    defaultValues: defaultValues ?? {
+      {{#main.table.columns}}
+        {{#isForm}}
+          {{^isPrimary}}
+            {{#isSelect}}
+              {{name.camel}}: "{{firstOption}}",
+            {{/isSelect}}
+            {{#isBoolean}}
+              {{name.camel}}: false,
+            {{/isBoolean}}
+          {{/isPrimary}}
+        {{/isForm}}
+      {{/main.table.columns}}
+      {{#children}}
+        {{name.plural.camel}}: [],
+      {{/children}}
+    },
+  });
+
+  {{#main.table.columns}}
+    {{#isRelatedTo}}
+      const {{name.camel}} = form.watch("{{name.camel}}")
+    {{/isRelatedTo}}
+  {{/main.table.columns}}
+
+  return (
+    <Form {...form} disabled={loading}>
+      <FormWrapper onSubmit={form.handleSubmit(onSubmit)}>
+        {{#isComplex}}
+          <Tabs defaultValue="{{main.name.singular.kebab}}" className="h-full">
+            <TabsList className="flex flex-col border *:flex-1">
+              <TabsTrigger value="{{main.name.singular.kebab}}">{t("tabs.{{main.name.singular.kebab}}")}</TabsTrigger>
+              {{#children}}
+                <TabsTrigger value="{{name.plural.kebab}}">{t("tabs.{{name.plural.kebab}}")}</TabsTrigger>
+              {{/children}}
+            </TabsList>
+            <TabsContent value="{{main.name.singular.kebab}}" className="overflow-hidden">
+              {{#main.table.form.isLarge}}
+                <div className="grid grid-cols-1 grid-rows-none gap-4 space-y-0 md:grid-cols-2 p-1">
+              {{/main.table.form.isLarge}}
+              {{^main.table.form.isLarge}}
+                <div className="space-y-4 p-1">
+              {{/main.table.form.isLarge}}
+        {{/isComplex}}
+        {{^isComplex}}
+          {{#main.table.form.isLarge}}
+            <div className="grid grid-cols-1 grid-rows-none gap-4 space-y-0 md:grid-cols-2">
+          {{/main.table.form.isLarge}}
+        {{/isComplex}}
+        {{#main.table.columns}}
+          {{#isForm}}
+            {{#isRelated}}
+              { {{related.field.camel}} === "{{related.value}}" && (
+            {{/isRelated}}
+            {{#isText}}
+              <FormField
+                control={form.control}
+                name="{{name.camel}}"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>{t("{{name.kebab}}.label")}</FormLabel>
+                    <FormControl>
+                      <TextInput {...field} placeholder={t("{{name.kebab}}.placeholder")} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            {{/isText}}
+            {{#isSelect}}
+              <FormField
+                control={form.control}
+                name="{{name.camel}}"
+                render={({ field: { value, onChange, ...field } }) => (
+                  <FormItem>
+                    <FormLabel>{t("{{name.kebab}}.label")}</FormLabel>
+                    <Select {...field} value={value} onValueChange={onChange}>
+                      <FormControl>
+                        <SelectTrigger>
+                          <SelectValue placeholder={t("{{name.kebab}}.placeholder")} />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent>
+                        {{#options}}
+                        <SelectItem value="{{option}}">{t("{{name.kebab}}.options.{{option}}")}</SelectItem>
+                        {{/options}}
+                      </SelectContent>
+                    </Select>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            {{/isSelect}}
+            {{#isRelation}}
+              <FormField
+                control={form.control}
+                name="{{name.camel}}"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>{t("{{name.kebab}}.label")}</FormLabel>
+                    <FormControl>
+                      <Combobox
+                        value={field.value}
+                        setValue={field.onChange}
+                        options={ {{relation.table.camel}}List.map(({{relation.table.camel}}) => ({
+                          value: {{relation.table.camel}}.id,
+                          label: {{relation.table.camel}}.content,
+                        }))}
+                        placeholder={t("{{name.kebab}}.placeholder")}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            {{/isRelation}}
+            {{#isNumber}}
+              <FormField
+                control={form.control}
+                name="{{name.camel}}"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>{t("{{name.kebab}}.label")}</FormLabel>
+                    <FormControl>
+                      <NumberInput {...field} placeholder={t("{{name.kebab}}.placeholder")} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            {{/isNumber}}
+            {{#isDate}}
+              <FormField
+                control={form.control}
+                name="{{name.camel}}"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>{t("{{name.kebab}}.label")}</FormLabel>
+                    <FormControl>
+                      <DateInput
+                        {{#isDateTime}}
+                          time
+                        {{/isDateTime}}
+                        value={field.value}
+                        onChange={field.onChange}
+                        placeholder={t("{{name.kebab}}.placeholder")}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            {{/isDate}}
+            {{#isCheckbox}}
+              <FormField
+                control={form.control}
+                name="{{name.camel}}"
+                render={({ field: { value, onChange, ...field } }) => (
+                  <FormItem>
+                    <FormControl>
+                      <Label className="flex cursor-pointer items-center gap-2 hover:bg-muted">
+                        <Checkbox
+                          {...field}
+                          checked={value}
+                          onCheckedChange={onChange}
+                        />
+                        {t("{{name.kebab}}.label")}
+                      </Label>
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            {{/isCheckbox}}
+            {{#isSwitch}}
+              <FormField
+                control={form.control}
+                name="{{name.camel}}"
+                render={({ field: { value, onChange, ...field } }) => (
+                  <FormItem>
+                    <FormLabel>{t("{{name.kebab}}.label")}</FormLabel>
+                    <div className="flex h-9 items-center gap-2 space-y-0 rounded-lg border border-input-border bg-input px-4 shadow-sm">
+                      <FormControl>
+                        <Switch
+                          {...field}
+                          checked={value}
+                          onCheckedChange={onChange}
+                        />
+                      </FormControl>
+                      <FormDescription>{t("{{name.kebab}}.description")}</FormDescription>
+                    </div>
+                  </FormItem>
+                )}
+              />
+            {{/isSwitch}}
+            {{#isRelated}}
+              )}
+            {{/isRelated}}
+          {{/isForm}}
+        {{/main.table.columns}}
+        {{#isComplex}}
+              </div>
+            </TabsContent>
+            {{#children}}
+              <TabsContent value="{{name.plural.kebab}}" className="overflow-hidden">
+                <{{name.plural.pascal}}Field
+                  form={form}
+                  {{#table.columns}}
+                    {{#isForm}}
+                      {{#isRelation}}
+                        {{relation.table.camel}}List={ {{relation.table.camel}}List }
+                      {{/isRelation}}
+                    {{/isForm}}
+                  {{/table.columns}}
+                />
+              </TabsContent>
+            {{/children}}
+          </Tabs>
+        {{/isComplex}}
+        {{^isComplex}}
+          {{#main.table.form.isLarge}}
+            </div>
+          {{/main.table.form.isLarge}}
+        {{/isComplex}}
+      </FormWrapper>
+    </Form>
+  );
+};

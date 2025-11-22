@@ -1,0 +1,331 @@
+{
+  "global": {
+    "app-name": "مدیریت پروژه"
+  },
+  "pages": {
+    "error": {
+      "title": "مشکلی پیش آمده!",
+      "description": "لطفا جهت رفع مشکل با تیم فنی تماس بگیرید.",
+      "return": "بازگشت",
+      "try-again": "مجددا تلاش کنید",
+      "offline": "اتصال به شبکه قطع شد",
+      "online": "مجددا متصل شدید"
+    },
+    "not-found": {
+      "title": "صفحه مورد نظر پیدا نشد!",
+      "description": "این صفحه به آدرس دیگری انتقال پیدا کرده یا حذف شده‌ است",
+      "return": "بازگشت"
+    },
+    "login": {
+      "title": "ورود",
+      "invalid-credentials": "نام کاربری یا رمز عبور اشتباه است"
+    },
+    "index": {
+      "title": "داشبورد",
+      "header": {
+        "title": "منو",
+        "locales": {
+          "fa": "فا",
+          "en": "En"
+        },
+        "customize": {
+          "title": "شخصی‌سازی",
+          "theme": {
+            "title": "رنگ‌بندی",
+            "dark": "تاریک",
+            "light": "روشن",
+            "system": "سیستم"
+          },
+          "menu": {
+            "title": "نمایش منو",
+            "slider": "اسلایدر",
+            "sticky": "چسبیده"
+          },
+          "toast": {
+            "title": "موقعیت اعلان‌ها",
+            "positions": {
+              "top-left": "بالا چپ",
+              "top-right": "بالا راست",
+              "bottom-left": "پایین چپ",
+              "bottom-right": "پایین راست",
+              "top-center": "بالا وسط",
+              "bottom-center": "پایین وسط"
+            }
+          },
+          "locale": {
+            "title": "زبان",
+            "fa": "فا",
+            "en": "EN"
+          },
+          "widgets": {
+            "edit": "ویرایش ویجت‌ها"
+          }
+        },
+        "menu": {
+          "placeholder": "جست‌وجو منو",
+          "sign-out": "خروج"
+        }
+      }
+    },
+    "dashboard": {
+      "widgets": {
+        "custom-widgets": "شخصی‌سازی شده",
+        "drop-here-to-add": "به اینجا کشیده تا به سطر اضافه شود",
+        "drop-here-to-remove": "برای حذف به اینجا بکشید"
+      }
+    },
+    "template": {
+      "title": "ساخت سیستم جدید",
+      "toasts": {
+        "create": {
+          "success": "ساخت سیستم با موفقیت انجام شد",
+          "error": "ساخت سیستم با مشکل مواجه شد"
+        }
+      }
+    }
+  },
+  "forms": {
+    "wrapper": {
+      "print": "چاپ",
+      "submit": "ثبت"
+    },
+    "login": {
+      "username": "نام کاربری",
+      "password": "رمز عبور",
+      "submit": "ثبت"
+    },
+    "template": {
+      "tabs": {
+        "base": "پایه",
+        "sub-table": "زیرجدول {index, number}"
+      },
+      "icon": {
+        "label": "آیکون",
+        "placeholder": "لطفا آیکون را انتخاب کنید"
+      },
+      "name": {
+        "label": "نام",
+        "placeholder": "لطفا نام را وارد کنید"
+      },
+      "label": {
+        "label": "عنوان",
+        "placeholder": "لطفا عنوان را وارد کنید"
+      },
+      "singular": {
+        "label": "مفرد",
+        "placeholder": "لطفا مفرد را وارد کنید"
+      },
+      "plural": {
+        "label": "جمع",
+        "placeholder": "لطفا جمع را وارد کنید"
+      },
+      "table": {
+        "label": "جدول",
+        "placeholder": "لطفا جدول را انتخاب کنید"
+      },
+      "related": {
+        "label": "فیلد مرتبط",
+        "placeholder": "لطفا فیلد مرتبط را انتخاب کنید"
+      },
+      "columns": {
+        "label": "ستون‌ها"
+      },
+      "column": {
+        "name": "نام",
+        "label": "توضیحات",
+        "special": "وضعیت",
+        "optional": "اختیاری",
+        "related": "فیلد مرتبط",
+        "visual": "نمایشی",
+        "table": "جدول",
+        "hide": "پنهان",
+        "grouped": "گروه‌بندی",
+        "search": "جست‌وجو",
+        "form": "فرم",
+        "type": "نوع",
+        "extra": "اطلاعات اضافی"
+      }
+    }
+  },
+  "components": {
+    "tab-manager": {
+      "tab-limit-error": "تعداد تب‌های باز از حد مجاز عبور کرده است"
+    },
+    "editor": {
+      "align-start": "راست‌چین",
+      "align-center": "وسط‌چین",
+      "align-end": "چپ‌چین",
+      "align-justify": "خط‌چین",
+      "bold": "بولد",
+      "italic": "ایتالیک",
+      "strike": "خط روی متن",
+      "ul-list": "لیست",
+      "ol-list": "لیست عددی",
+      "code": "کد",
+      "quote": "نقل‌قول",
+      "media": "چندرسانه‌ای",
+      "line": "خط جداکننده",
+      "table": "جدول",
+      "upload-error": "آپلود فایل با مشکل مواجه شد"
+    },
+    "data-table": {
+      "options": "گزینه‌ها",
+      "show-details": "نمایش جزئیات",
+      "show-more": "نمایش بیشتر",
+      "show-less": "نمایش کمتر",
+      "pagination": {
+        "go-to": "برو به",
+        "page": "صفحه {page, number} از {pages, number}",
+        "rows-per-page": "تعداد در صفحه",
+        "submit": "تایید",
+        "display-rows": "{from, number} تا {to, number} از {count, plural, =-1 {بیشتر از {to}} other {#}}"
+      },
+      "aggregations": {
+        "selected": "انتخاب شده: {value, number}",
+        "count": "تعداد: {value, number}",
+        "uniqueCount": "تعداد: {value, number}",
+        "sum": "{value, number}",
+        "min": "حداقل: {value, number}",
+        "max": "حداکثر: {value, number}",
+        "mean": "میانگین: {value, number}"
+      },
+      "header": {
+        "actions": {
+          "refresh": "تازه‌سازی",
+          "create-new": "افزودن رکورد جدید",
+          "export": "دریافت خروجی",
+          "export-to-excel": "خروجی به اکسل",
+          "export-to-pdf": "خروجی به پی‌دی‌اف",
+          "column-selector": "انتخاب ستون‌ها",
+          "filter-all": "جست‌وجوی همه",
+          "filter-on-columns": "جست‌وجو بر روی:",
+          "group": "افزودن به گروه‌بندی",
+          "ungroup": "حذف از گروه‌بندی",
+          "drag-to-group": "ستون را به اینجا کشیده تا به گروه‌بندی اضافه شود",
+          "zoom-to-fullscreen": "نمایش تمام صفحه",
+          "undo-zoom": "نمایش عادی",
+          "show-all-columns": "نمایش همه ستون‌ها",
+          "hide-overflow-columns": "مخفی کردن ستون‌ها",
+          "expand-all": "باز کردن همه",
+          "collapse-all": "بستن همه",
+          "pin-right": "چسبیدن به انتها",
+          "pin-left": "چسبیدن به ابتدا",
+          "unpin-right": "حذف از انتها",
+          "unpin-left": "حذف از ابتدا",
+          "sort": {
+            "asc": "مرتب‌سازی صعودی",
+            "desc": "مرتب‌سازی نزولی"
+          },
+          "filter": {
+            "hint": "فیلتر",
+            "title": "فیلترها",
+            "clear": "پاک کردن همه"
+          }
+        },
+        "filters": {
+          "text": {
+            "contains": "شامل باشد",
+            "not-contains": "شامل نباشد",
+            "equals": "مساوی باشد",
+            "labels": {
+              "includesString": "شامل \"{value}\" باشد",
+              "notIncludesString": "شامل \"{value}\" نباشد",
+              "equalsString": "مساوی \"{value}\" باشد"
+            }
+          },
+          "select": {
+            "placeholder": "انتخاب کنید",
+            "labels": {
+              "equals": "مساوی \"{value}\" باشد"
+            }
+          },
+          "number": {
+            "equals": "مساوی",
+            "not-equals": "نامساوی",
+            "less-than": "کوچکتر از",
+            "less-equals-than": "کوچکتر مساوی",
+            "greater-than": "بزرگتر از",
+            "greater-equals-than": "بزرگتر مساوی",
+            "labels": {
+              "eq": "مساوی \"{value, number}\" باشد",
+              "ne": "مساوی \"{value, number}\" باشد",
+              "lt": "کوچکتر از \"{value, number}\" باشد",
+              "le": "کوچکتر مساوی \"{value, number}\" باشد",
+              "gt": "بزرگتر از \"{value, number}\" باشد",
+              "ge": "بزرگتر مساوی \"{value, number}\" باشد"
+            }
+          },
+          "boolean": {
+            "equals": "مساوی باشد",
+            "not-equals": "مساوی نباشد",
+            "labels": {
+              "true": "\"صحیح\" باشد",
+              "false": "\"ناصحیح\" باشد"
+            }
+          },
+          "date": {
+            "choose-date": "انتخاب تاریخ",
+            "less-than": "کمتر از",
+            "more-than": "بیشتر از",
+            "between": "در بازه‌ی",
+            "labels": {
+              "less-than": "کوچکتر از \"{value, date, date}\" باشد",
+              "more-than": "بزرگتر از \"{value, date, date}\" باشد",
+              "between": "در بازه‌ی \"{value1, date, date}\" و \"{value2, date, date}\" باشد"
+            }
+          }
+        }
+      }
+    },
+    "dropzone": {
+      "drag": "فایل را به اینجا بکشید",
+      "drop": "فایل را اینجا رها کنید",
+      "browse": "جست‌وجو در فایل‌ها"
+    },
+    "checkbox-table": {
+      "show": "نمایش انتخاب شده‌ها",
+      "hide": "نمایش همه"
+    },
+    "combobox-tree": {
+      "expand-all": "باز کردن همه",
+      "collapse-all": "بستن همه"
+    },
+    "date-input": {
+      "today": "امروز: {date, date}"
+    },
+    "multiselect": {
+      "placeholder": "انتخاب کنید",
+      "close": "بستن",
+      "clear": "پاک کردن همه",
+      "search": "جست‌وجو",
+      "select-all": "(انتخاب همه)",
+      "empty": "موردی پیدا نشد",
+      "more": "+ {items, number} بیشتر"
+    },
+    "simple-table": {
+      "show-more": "نمایش بیشتر",
+      "show-less": "نمایش کمتر"
+    },
+    "scheduler": {
+      "show": "نمایش رویدادها",
+      "create": "ایجاد رویداد",
+      "today": "امروز : {date} (هفته {week})",
+      "next": "ماه بعدی",
+      "prev": "ماه قبلی",
+      "events": "{count, number} رویداد",
+      "go-to-today": "برو به امروز",
+      "go-to-today-mobile": "امروز",
+      "calendars": {
+        "arabic": "جلالی",
+        "gregory": "میلادی",
+        "indian": "هندی",
+        "persian": "شمسی"
+      }
+    },
+    "dynamic-tabs": {
+      "close": "بستن تب",
+      "close-all": "بستن تمام تب‌ها",
+      "close-others": "بستن دیگر تب‌ها"
+    }
+  }
+}

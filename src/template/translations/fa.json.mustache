@@ -1,0 +1,127 @@
+{
+  "pages": {
+    "{{main.name.plural.kebab}}": {
+      "title": "{{main.label.plural}}",
+      "table": {
+        "columns": {
+          {{#main.table.columns}}
+            {{#isTable}}
+              "{{name.kebab}}": "{{label}}"{{tableComma}}
+            {{/isTable}}
+          {{/main.table.columns}}
+          {{#children}}
+            , "{{name.plural.kebab}}": "{{label.plural}}"
+          {{/children}}
+        },
+        "aggregations": {
+          "count": "تعداد: {count, number}"
+        },
+        {{#main.table.table.hasSelect}}
+          "options": {
+            {{#main.table.columns}}
+              {{#isSelect}}
+                "{{name.kebab}}": {
+                  {{#options}}
+                    "{{option}}": "{{option}}"{{comma}}
+                  {{/options}}
+                }{{selectComma}}
+              {{/isSelect}}
+            {{/main.table.columns}}
+          },
+        {{/main.table.table.hasSelect}}
+        "actions": {
+          "edit": "ویرایش",
+          {{#main.table.tree}}
+            "add-child": "افزودن زیرمجموعه",
+          {{/main.table.tree}}
+          "delete": {
+            "name": "حذف",
+            "confirmation": {
+              "title": "حذف {name}",
+              "message": "آیا از حذف \"{name}\" اطمینان دارید؟",
+              "yes": "بله",
+              "no": "خیر"
+            }
+          }
+        }
+      },
+      "toasts": {
+        "create": {
+          "success": "ساخت {{main.label.singular}} با موفقیت انجام شد",
+          "error": "ساخت {{main.label.singular}} با مشکل مواجه شد"
+        },
+        "update": {
+          "success": "ویرایش {{main.label.singular}} با موفقیت انجام شد",
+          "error": "ویرایش {{main.label.singular}} با مشکل مواجه شد"
+        },
+        "delete": {
+          "success": "حذف {{main.label.singular}} با موفقیت انجام شد",
+          "error": "حذف {{main.label.singular}} با مشکل مواجه شد"
+        }
+      },
+      "single": {
+        "create-title": "ثبت {{main.label.singular}} جدید",
+        "update-title": "ویرایش {{main.label.singular}} \"{name}\""
+      }
+    }
+  },
+  "forms": {
+    "{{main.name.singular.kebab}}": {
+      {{#isComplex}}
+        "tabs": {
+          "{{main.name.singular.kebab}}": "{{main.label.singular}}",
+          {{#children}}
+            "{{name.plural.kebab}}": "{{label.plural}}"
+          {{/children}}
+        },
+      {{/isComplex}}
+      {{#main.table.columns}}
+        {{#isForm}}
+          "{{name.kebab}}": {
+            "label": "{{label}}",
+            {{#isSelect}}
+              "options": {
+                {{#options}}
+                  "{{option}}": "{{option}}"{{comma}}
+                {{/options}}
+              },
+            {{/isSelect}}
+            {{#isBoolean}}
+              "description": "{{label}}"
+            {{/isBoolean}}
+            {{^isBoolean}}
+              "placeholder": "لطفا {{label}} را وارد کنید"
+            {{/isBoolean}}
+          }{{formComma}}
+        {{/isForm}}
+      {{/main.table.columns}}
+      {{#children}}
+        , "{{name.plural.kebab}}": {
+          "label": "{{label.plural}}"
+        },
+        "{{name.singular.kebab}}": {
+          {{#table.columns}}
+            {{#isForm}}
+              "{{name.kebab}}": {
+                "label": "{{label}}",
+                {{#isSelect}}
+                  "options": {
+                    {{#options}}
+                      "{{option}}": "{{option}}"{{comma}}
+                    {{/options}}
+                  },
+                {{/isSelect}}
+                {{#isBoolean}}
+                  "description": "{{label}}"
+                {{/isBoolean}}
+                {{^isBoolean}}
+                  "placeholder": "لطفا {{label}} را وارد کنید"
+                {{/isBoolean}}
+              }{{formComma}}
+            {{/isForm}}
+          {{/table.columns}}
+        }{{comma}}
+      {{/children}}
+    }
+  }
+}

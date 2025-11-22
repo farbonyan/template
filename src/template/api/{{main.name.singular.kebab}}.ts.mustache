@@ -1,0 +1,648 @@
+import { z } from "~/lib/zod";
+import {
+  createTRPCRouter,
+  protectedProcedure,
+} from "~/server/api/trpc";
+{{#main.table.tree}}
+  import { makeTree } from "~/utils/array";
+{{/main.table.tree}}
+
+export const {{main.name.singular.camel}}Router = createTRPCRouter({
+  all: protectedProcedure.query(async ({ ctx }) => {
+    const {{main.name.plural.camel}} = await ctx.db.{{main.table.name.original}}.findMany({
+      select: {
+        {{#main.table.columns}}
+          {{#isTable}}
+            {{name.original}}: true,
+          {{/isTable}}
+        {{/main.table.columns}}
+        {{#children}}
+          _count: {
+            select: {
+              {{table.name.original}}: true,
+            },
+          },
+        {{/children}}
+      },
+      {{#main.table.softDelete}}
+      where: { deletedAt: null },
+      {{/main.table.softDelete}}
+    });
+    {{#main.table.tree}}
+      return makeTree({{main.name.plural.camel}}.map(({{main.name.singular.camel}}) => ({
+        {{#main.table.columns}}
+          {{#isPrimary}}
+            {{name.camel}}: {{main.name.singular.camel}}.{{name.original}}{{#isNumber}}.toString(){{/isNumber}},
+          {{/isPrimary}}
+          {{^isPrimary}}
+            {{#isTable}}
+              {{#isParent}}
+                {{name.camel}}: {{main.name.singular.camel}}.{{name.original}}{{#isNumber}}?.toString(){{/isNumber}},
+              {{/isParent}}
+              {{^isParent}}
+                {{#isRelation}}
+                  {{name.camel}}: {{main.name.singular.camel}}.{{name.original}}{{#isNumber}}.toString(){{/isNumber}},
+                {{/isRelation}}
+                {{^isRelation}}
+                  {{name.camel}}: {{main.name.singular.camel}}.{{name.original}}{{#isSelect}} as {{#options}}"{{option}}"{{#comma}}|{{/comma}}{{/options}}{{/isSelect}},
+                {{/isRelation}}
+              {{/isParent}}
+            {{/isTable}}
+          {{/isPrimary}}
+        {{/main.table.columns}}
+        {{#children}}
+          {{name.plural.camel}}Count: {{main.name.singular.camel}}._count.{{table.name.original}},
+        {{/children}}
+      })), "{{main.table.specialColumns.primary.name.camel}}", "{{main.table.specialColumns.parent.name.camel}}")
+    {{/main.table.tree}}
+    {{^main.table.tree}}
+      return {{main.name.plural.camel}}.map(({{main.name.singular.camel}}) => ({
+        {{#main.table.columns}}
+          {{#isPrimary}}
+            {{name.camel}}: {{main.name.singular.camel}}.{{name.original}}{{#isNumber}}.toString(){{/isNumber}},
+          {{/isPrimary}}
+          {{^isPrimary}}
+            {{#isTable}}
+              {{#isParent}}
+                {{name.camel}}: {{main.name.singular.camel}}.{{name.original}}{{#isNumber}}?.toString(){{/isNumber}},
+              {{/isParent}}
+              {{^isParent}}
+                {{#isRelation}}
+                  {{name.camel}}: {{main.name.singular.camel}}.{{name.original}}{{#isNumber}}.toString(){{/isNumber}},
+                {{/isRelation}}
+                {{^isRelation}}
+                  {{name.camel}}: {{main.name.singular.camel}}.{{name.original}}{{#isSelect}} as {{#options}}"{{option}}"{{#comma}}|{{/comma}}{{/options}}{{/isSelect}},
+                {{/isRelation}}
+              {{/isParent}}
+            {{/isTable}}
+          {{/isPrimary}}
+        {{/main.table.columns}}
+        {{#children}}
+          {{name.plural.camel}}Count: {{main.name.singular.camel}}._count.{{table.name.original}},
+        {{/children}}
+      }))
+    {{/main.table.tree}}
+  }),
+  dropdown: protectedProcedure.query(async ({ ctx }) => {
+    const {{main.name.plural.camel}} = await ctx.db.{{main.table.name.original}}.findMany({
+      select: {
+        {{main.table.specialColumns.primary.name.original}}: true,
+        {{main.table.specialColumns.title.name.original}}: true,
+        {{#main.table.tree}}
+          {{main.table.specialColumns.parent.name.original}}: true,
+        {{/main.table.tree}}
+      },
+      {{#main.table.softDelete}}
+      where: { deletedAt: null },
+      {{/main.table.softDelete}}
+    });
+    {{#main.table.tree}}
+      return makeTree({{main.name.plural.camel}}.map(({{main.name.singular.camel}}) => ({
+        id: {{main.name.singular.camel}}.{{main.table.specialColumns.primary.name.original}}{{#main.table.specialColumns.primary.isNumber}}.toString(){{/main.table.specialColumns.primary.isNumber}},
+        content: {{main.name.singular.camel}}.{{main.table.specialColumns.title.name.original}},
+        parent: {{main.name.singular.camel}}.{{main.table.specialColumns.parent.name.original}}{{#main.table.specialColumns.parent.isNumber}}.toString(){{/main.table.specialColumns.parent.isNumber}},
+      })), "id", "parent");
+    {{/main.table.tree}}
+    {{^main.table.tree}}
+      return {{main.name.plural.camel}}.map(({{main.name.singular.camel}}) => ({
+        id: {{main.name.singular.camel}}.{{main.table.specialColumns.primary.name.original}}{{#main.table.specialColumns.primary.isNumber}}.toString(){{/main.table.specialColumns.primary.isNumber}},
+        content: {{main.name.singular.camel}}.{{main.table.specialColumns.title.name.original}},
+      }));
+    {{/main.table.tree}}
+  }),
+  single: protectedProcedure
+    .input(z.string(){{#main.table.specialColumns.primary.isNumber}}.transform((id) => Number.parseInt(id)){{/main.table.specialColumns.primary.isNumber}})
+    .query(async ({ input, ctx }) => {
+      const {{main.name.singular.camel}} = await ctx.db.{{main.table.name.original}}.findUnique({
+        select: {
+          {{#main.table.columns}}
+            {{#isPrimary}}
+              {{name.original}}: true,
+            {{/isPrimary}}
+            {{^isPrimary}}
+              {{#isForm}}
+                {{name.original}}: true,
+              {{/isForm}}
+            {{/isPrimary}}
+          {{/main.table.columns}}
+          {{#children}}
+            {{table.name.original}}: {
+              select: {
+                {{#table.columns}}
+                  {{#isPrimary}}
+                    {{name.original}}: true,
+                  {{/isPrimary}}
+                  {{^isPrimary}}
+                    {{#isForm}}
+                      {{name.original}}: true,
+                    {{/isForm}}
+                  {{/isPrimary}}
+                {{/table.columns}}
+              },
+            },
+          {{/children}}
+        },
+        where: {
+          {{main.table.specialColumns.primary.name.original}}: input,
+          {{#main.table.softDelete}}
+            deletedAt: null,
+          {{/main.table.softDelete}}
+        },
+      });
+      if (!{{main.name.singular.camel}}) return null;
+      return {
+        {{#main.table.columns}}
+          {{#isPrimary}}
+            {{name.camel}}: {{main.name.singular.camel}}.{{name.original}}{{#isNumber}}.toString(){{/isNumber}},
+          {{/isPrimary}}
+          {{^isPrimary}}
+            {{#isForm}}
+              {{#isParent}}
+                {{name.camel}}: {{main.name.singular.camel}}.{{name.original}}{{#isNumber}}?.toString(){{/isNumber}},
+              {{/isParent}}
+              {{^isParent}}
+                {{#isRelation}}
+                  {{name.camel}}: {{main.name.singular.camel}}.{{name.original}}{{#isNumber}}.toString(){{/isNumber}},
+                {{/isRelation}}
+                {{^isRelation}}
+                  {{name.camel}}: {{main.name.singular.camel}}.{{name.original}}{{#isSelect}} as {{#options}}"{{option}}"{{#comma}}|{{/comma}}{{/options}}{{/isSelect}},
+                {{/isRelation}}
+              {{/isParent}}
+            {{/isForm}}
+          {{/isPrimary}}
+        {{/main.table.columns}}
+        {{#children}}
+          {{name.plural.camel}}: {{main.name.singular.camel}}.{{table.name.original}}.map(({{name.singular.camel}}) => ({
+              {{#table.columns}}
+                {{#isPrimary}}
+                  {{name.camel}}: {{name.singular.camel}}.{{name.original}}{{#isNumber}}.toString(){{/isNumber}},
+                {{/isPrimary}}
+                {{^isPrimary}}
+                  {{#isForm}}
+                    {{#isParent}}
+                      {{name.camel}}: {{name.singular.camel}}.{{name.original}}{{#isNumber}}?.toString(){{/isNumber}},
+                    {{/isParent}}
+                    {{^isParent}}
+                      {{#isRelation}}
+                        {{name.camel}}: {{name.singular.camel}}.{{name.original}}{{#isNumber}}.toString(){{/isNumber}},
+                      {{/isRelation}}
+                      {{^isRelation}}
+                        {{name.camel}}: {{name.singular.camel}}.{{name.original}}{{#isSelect}} as {{#options}}"{{option}}"{{#comma}}|{{/comma}}{{/options}}{{/isSelect}},
+                      {{/isRelation}}
+                    {{/isParent}}
+                  {{/isForm}}
+                {{/isPrimary}}
+              {{/table.columns}}
+          })),
+        {{/children}}
+      }
+    }),
+  create: protectedProcedure
+    .input(
+      z.object({
+        {{#main.table.columns}}
+          {{^isPrimary}}
+            {{#isForm}}
+              {{name.camel}}:
+              {{#isText}}
+                z.string().trim().min(1)
+              {{/isText}}
+              {{#isSelect}}
+                z.enum([
+                  {{#options}}
+                  "{{option}}",
+                  {{/options}}
+                ])
+              {{/isSelect}}
+              {{#isFloat}}
+                z.number()
+              {{/isFloat}}
+              {{#isInt}}
+                z.number().int()
+              {{/isInt}}
+              {{#isBigInt}}
+                z.bigint()
+              {{/isBigInt}}
+              {{#isDate}}
+                z.coerce.date()
+              {{/isDate}}
+              {{#isBoolean}}
+                z.boolean()
+              {{/isBoolean}}
+              {{#isRelation}}
+                z.string(){{#relation.primary.isNumber}}.transform((id) => Number.parseInt(id)){{/relation.primary.isNumber}}
+              {{/isRelation}}
+                {{#isOptional}}
+                  {{#isText}}
+                    .transform((s) => s || null)
+                  {{/isText}}
+                  .nullish(),
+                {{/isOptional}}
+                {{^isOptional}}
+                  ,
+                {{/isOptional}}
+            {{/isForm}}
+          {{/isPrimary}}
+        {{/main.table.columns}}
+        {{#main.table.tree}}
+          {{main.table.specialColumns.parent.name.camel}}: z
+            .string()
+            {{#main.table.specialColumns.parent.isNumber}}
+              .transform((id) => Number.parseInt(id))
+            {{/main.table.specialColumns.parent.isNumber}}
+            .nullish(),
+        {{/main.table.tree}}
+        {{#children}}
+          {{name.plural.camel}}: z.object({
+            {{#table.columns}}
+              {{^isPrimary}}
+                {{#isForm}}
+                  {{name.camel}}:
+                  {{#isText}}
+                    z.string().trim().min(1)
+                  {{/isText}}
+                  {{#isSelect}}
+                    z.enum([
+                      {{#options}}
+                      "{{option}}",
+                      {{/options}}
+                    ])
+                  {{/isSelect}}
+                  {{#isFloat}}
+                    z.number()
+                  {{/isFloat}}
+                  {{#isInt}}
+                    z.number().int()
+                  {{/isInt}}
+                  {{#isBigInt}}
+                    z.bigint()
+                  {{/isBigInt}}
+                  {{#isDate}}
+                    z.coerce.date()
+                  {{/isDate}}
+                  {{#isBoolean}}
+                    z.boolean()
+                  {{/isBoolean}}
+                  {{#isRelation}}
+                    z.string(){{#relation.primary.isNumber}}.transform((id) => Number.parseInt(id)){{/relation.primary.isNumber}}
+                  {{/isRelation}}
+                    {{#isOptional}}
+                      {{#isText}}
+                        .transform((s) => s || null)
+                      {{/isText}}
+                      .nullish(),
+                    {{/isOptional}}
+                    {{^isOptional}}
+                      ,
+                    {{/isOptional}}
+                {{/isForm}}
+              {{/isPrimary}}
+            {{/table.columns}}
+            {{#table.tree}}
+              {{table.specialColumns.parent.name.camel}}: z
+                .string()
+                {{#table.specialColumns.parent.isNumber}}
+                  .transform((id) => Number.parseInt(id))
+                {{/table.specialColumns.parent.isNumber}}
+                .nullish(),
+            {{/table.tree}}
+          })
+          {{#table.form.hasRelated}}
+            .superRefine((arg, ctx) => {
+              {{#table.columns}}
+                {{#isRelated}}
+                if (arg.{{related.field.camel}} === "{{related.value}}" && arg.{{name.camel}} == null) {
+                  ctx.addIssue({
+                    code: "invalid_type",
+                    expected: "{{type}}",
+                    received: "null",
+                    path: ["{{name.camel}}"],
+                  });
+                }
+                {{/isRelated}}
+              {{/table.columns}}
+            })
+          {{/table.form.hasRelated}}
+          .array(),
+        {{/children}}
+      })
+      {{#main.table.form.hasRelated}}
+        .superRefine((arg, ctx) => {
+          {{#main.table.columns}}
+            {{#isRelated}}
+            if (arg.{{related.field.camel}} === "{{related.value}}" && arg.{{name.camel}} == null) {
+              ctx.addIssue({
+                code: "invalid_type",
+                expected: "{{type}}",
+                received: "null",
+                path: ["{{name.camel}}"],
+              });
+            }
+            {{/isRelated}}
+          {{/main.table.columns}}
+        })
+      {{/main.table.form.hasRelated}}
+    )
+    .mutation(async ({ input, ctx }) => {
+      const {{main.name.singular.camel}} = await ctx.db.{{main.table.name.original}}.create({
+        data: {
+          {{#main.table.columns}}
+            {{^isPrimary}}
+              {{#isForm}}
+                {{name.original}}: input.{{name.camel}},
+              {{/isForm}}
+            {{/isPrimary}}
+          {{/main.table.columns}}
+          {{#main.table.tree}}
+            {{main.table.specialColumns.parent.name.original}}: input.{{main.table.specialColumns.parent.name.camel}},
+          {{/main.table.tree}}
+          {{#children}}
+            {{table.name.original}}: {
+              createMany: {
+                data: input.{{name.plural.camel}}.map(({{name.singular.camel}}) => {
+                  return {
+                    {{#table.columns}}
+                      {{^isPrimary}}
+                        {{#isForm}}
+                          {{name.original}}: {{name.singular.camel}}.{{name.camel}},
+                        {{/isForm}}
+                      {{/isPrimary}}
+                    {{/table.columns}}
+                    {{#table.tree}}
+                      {{table.specialColumns.parent.name.original}}: {{name.singular.camel}}.{{table.specialColumns.parent.name.camel}},
+                    {{/table.tree}}
+                  }
+                }),
+              },
+            },
+          {{/children}}
+        },
+      });
+      return {
+        {{#main.table.columns}}
+          {{#isPrimary}}
+            {{name.camel}}: {{main.name.singular.camel}}.{{name.original}}{{#isNumber}}.toString(){{/isNumber}},
+          {{/isPrimary}}
+          {{^isPrimary}}
+            {{#isForm}}
+              {{#isParent}}
+                {{name.camel}}: {{main.name.singular.camel}}.{{name.original}}{{#isNumber}}?.toString(){{/isNumber}},
+              {{/isParent}}
+              {{^isParent}}
+                {{#isRelation}}
+                  {{name.camel}}: {{main.name.singular.camel}}.{{name.original}}{{#isNumber}}.toString(){{/isNumber}},
+                {{/isRelation}}
+                {{^isRelation}}
+                  {{name.camel}}: {{main.name.singular.camel}}.{{name.original}}{{#isSelect}} as {{#options}}"{{option}}"{{#comma}}|{{/comma}}{{/options}}{{/isSelect}},
+                {{/isRelation}}
+              {{/isParent}}
+            {{/isForm}}
+          {{/isPrimary}}
+        {{/main.table.columns}}
+      }
+    }),
+  update: protectedProcedure
+    .input(
+      z.object({
+        {{#main.table.columns}}
+          {{#isPrimary}}
+            {{name.camel}}: z.string(){{#main.table.specialColumns.primary.isNumber}}.transform((id) => Number.parseInt(id)){{/main.table.specialColumns.primary.isNumber}},
+          {{/isPrimary}}
+          {{#isForm}}
+            {{name.camel}}:
+            {{#isText}}
+              z.string().trim().min(1)
+            {{/isText}}
+            {{#isSelect}}
+              z.enum([
+                {{#options}}
+                "{{option}}",
+                {{/options}}
+              ])
+            {{/isSelect}}
+            {{#isFloat}}
+              z.number()
+            {{/isFloat}}
+            {{#isInt}}
+              z.number().int()
+            {{/isInt}}
+            {{#isBigInt}}
+              z.bigint()
+            {{/isBigInt}}
+            {{#isDate}}
+              z.coerce.date()
+            {{/isDate}}
+            {{#isBoolean}}
+              z.boolean()
+            {{/isBoolean}}
+            {{#isRelation}}
+              z.string(){{#relation.primary.isNumber}}.transform((id) => Number.parseInt(id)){{/relation.primary.isNumber}}
+            {{/isRelation}}
+              {{#isOptional}}
+                {{#isText}}
+                  .transform((s) => s || null)
+                {{/isText}}
+                .nullish(),
+              {{/isOptional}}
+              {{^isOptional}}
+                .optional(),
+              {{/isOptional}}
+          {{/isForm}}
+        {{/main.table.columns}}
+        {{#main.table.tree}}
+          {{main.table.specialColumns.parent.name.camel}}: z
+            .string()
+            {{#main.table.specialColumns.parent.isNumber}}
+              .transform((id) => Number.parseInt(id))
+            {{/main.table.specialColumns.parent.isNumber}}
+            .nullish(),
+        {{/main.table.tree}}
+        {{#children}}
+          {{name.plural.camel}}: z.object({
+            {{#table.columns}}
+              {{^isPrimary}}
+                {{#isForm}}
+                  {{name.camel}}:
+                  {{#isText}}
+                    z.string().trim().min(1)
+                  {{/isText}}
+                  {{#isSelect}}
+                    z.enum([
+                      {{#options}}
+                      "{{option}}",
+                      {{/options}}
+                    ])
+                  {{/isSelect}}
+                  {{#isFloat}}
+                    z.number()
+                  {{/isFloat}}
+                  {{#isInt}}
+                    z.number().int()
+                  {{/isInt}}
+                  {{#isBigInt}}
+                    z.bigint()
+                  {{/isBigInt}}
+                  {{#isDate}}
+                    z.coerce.date()
+                  {{/isDate}}
+                  {{#isBoolean}}
+                    z.boolean()
+                  {{/isBoolean}}
+                  {{#isRelation}}
+                    z.string(){{#relation.primary.isNumber}}.transform((id) => Number.parseInt(id)){{/relation.primary.isNumber}}
+                  {{/isRelation}}
+                    {{#isOptional}}
+                      {{#isText}}
+                        .transform((s) => s || null)
+                      {{/isText}}
+                      .nullish(),
+                    {{/isOptional}}
+                    {{^isOptional}}
+                      ,
+                    {{/isOptional}}
+                {{/isForm}}
+              {{/isPrimary}}
+            {{/table.columns}}
+            {{#table.tree}}
+              {{table.specialColumns.parent.name.camel}}: z
+                .string()
+                {{#table.specialColumns.parent.isNumber}}
+                  .transform((id) => Number.parseInt(id))
+                {{/table.specialColumns.parent.isNumber}}
+                .nullish(),
+            {{/table.tree}}
+          })
+          {{#table.form.hasRelated}}
+            .superRefine((arg, ctx) => {
+              {{#table.columns}}
+                {{#isRelated}}
+                if (arg.{{related.field.camel}} === "{{related.value}}" && arg.{{name.camel}} == null) {
+                  ctx.addIssue({
+                    code: "invalid_type",
+                    expected: "{{type}}",
+                    received: "null",
+                    path: ["{{name.camel}}"],
+                  });
+                }
+                {{/isRelated}}
+              {{/table.columns}}
+            })
+          {{/table.form.hasRelated}}
+          .array().optional(),
+        {{/children}}
+      })
+      {{#main.table.form.hasRelated}}
+        .superRefine((arg, ctx) => {
+          {{#main.table.columns}}
+            {{#isRelated}}
+            if (arg.{{related.field.camel}} === "{{related.value}}" && arg.{{name.camel}} == null) {
+              ctx.addIssue({
+                code: "invalid_type",
+                expected: "{{type}}",
+                received: "null",
+                path: ["{{name.camel}}"],
+              });
+            }
+            {{/isRelated}}
+          {{/main.table.columns}}
+        })
+      {{/main.table.form.hasRelated}}
+    )
+    .mutation(async ({ input, ctx }) => {
+      const {{main.name.singular.camel}} = await ctx.db.{{main.table.name.original}}.update({
+        where: { {{main.table.specialColumns.primary.name.original}}: input.{{main.table.specialColumns.primary.name.camel}} },
+        data: {
+          {{#main.table.columns}}
+            {{^isPrimary}}
+              {{#isForm}}
+                {{name.original}}: input.{{name.camel}},
+              {{/isForm}}
+            {{/isPrimary}}
+          {{/main.table.columns}}
+          {{#main.table.tree}}
+            {{main.table.specialColumns.parent.name.original}}: input.{{main.table.specialColumns.parent.name.camel}},
+          {{/main.table.tree}}
+          {{#children}}
+            {{table.name.original}}: input.{{name.plural.camel}} ? {
+              deleteMany: {},
+              createMany: {
+                data: input.{{name.plural.camel}}.map(({{name.singular.camel}}) => {
+                  return {
+                    {{#table.columns}}
+                      {{^isPrimary}}
+                        {{#isForm}}
+                          {{name.original}}: {{name.singular.camel}}.{{name.camel}},
+                        {{/isForm}}
+                      {{/isPrimary}}
+                    {{/table.columns}}
+                    {{#table.tree}}
+                      {{table.specialColumns.parent.name.original}}: {{name.singular.camel}}.{{table.specialColumns.parent.name.camel}},
+                    {{/table.tree}}
+                  }
+                }),
+              },
+            } : undefined,
+          {{/children}}
+        },
+      });
+      return {
+        {{#main.table.columns}}
+          {{#isPrimary}}
+            {{name.camel}}: {{main.name.singular.camel}}.{{name.original}}{{#isNumber}}.toString(){{/isNumber}},
+          {{/isPrimary}}
+          {{^isPrimary}}
+            {{#isForm}}
+              {{#isParent}}
+                {{name.camel}}: {{main.name.singular.camel}}.{{name.original}}{{#isNumber}}?.toString(){{/isNumber}},
+              {{/isParent}}
+              {{^isParent}}
+                {{#isRelation}}
+                  {{name.camel}}: {{main.name.singular.camel}}.{{name.original}}{{#isNumber}}.toString(){{/isNumber}},
+                {{/isRelation}}
+                {{^isRelation}}
+                  {{name.camel}}: {{main.name.singular.camel}}.{{name.original}}{{#isSelect}} as {{#options}}"{{option}}"{{#comma}}|{{/comma}}{{/options}}{{/isSelect}},
+                {{/isRelation}}
+              {{/isParent}}
+            {{/isForm}}
+          {{/isPrimary}}
+        {{/main.table.columns}}
+      }
+    }),
+  delete: protectedProcedure
+    .input(z.string(){{#main.table.specialColumns.primary.isNumber}}.transform((id) => Number.parseInt(id)){{/main.table.specialColumns.primary.isNumber}})
+    .mutation(async ({ input, ctx }) => {
+      {{#main.table.softDelete}}
+        const {{main.name.singular.camel}} = await ctx.db.{{main.table.name.original}}.update({
+          where: { {{main.table.specialColumns.primary.name.original}}: input },
+          data: { deletedAt: new Date() },
+        });
+      {{/main.table.softDelete}}
+      {{^main.table.softDelete}}
+        const {{main.name.singular.camel}} = await ctx.db.{{main.table.name.original}}.delete({
+          where: { {{main.table.specialColumns.primary.name.original}}: input },
+        });
+      {{/main.table.softDelete}}
+      return {
+        {{#main.table.columns}}
+          {{#isPrimary}}
+            {{name.camel}}: {{main.name.singular.camel}}.{{name.original}}{{#isNumber}}.toString(){{/isNumber}},
+          {{/isPrimary}}
+          {{^isPrimary}}
+            {{#isTable}}
+              {{#isParent}}
+                {{name.camel}}: {{main.name.singular.camel}}.{{name.original}}{{#isNumber}}?.toString(){{/isNumber}},
+              {{/isParent}}
+              {{^isParent}}
+                {{#isRelation}}
+                  {{name.camel}}: {{main.name.singular.camel}}.{{name.original}}{{#isNumber}}.toString(){{/isNumber}},
+                {{/isRelation}}
+                {{^isRelation}}
+                  {{name.camel}}: {{main.name.singular.camel}}.{{name.original}}{{#isSelect}} as {{#options}}"{{option}}"{{#comma}}|{{/comma}}{{/options}}{{/isSelect}},
+                {{/isRelation}}
+              {{/isParent}}
+            {{/isTable}}
+          {{/isPrimary}}
+        {{/main.table.columns}}
+      }
+    }),
+});

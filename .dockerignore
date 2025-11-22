@@ -1,0 +1,17 @@
+.dockerignore
+
+node_modules
+**/node_modules
+
+out
+dist
+
+*.log
+
+pnpm-lock.yaml.old
+
+README.md
+
+.next
+
+.git
