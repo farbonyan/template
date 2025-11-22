@@ -127,5 +127,11 @@ export const useSetting = <K extends NestedKeyOf<SettingsType>>(
     setSettingMutation.mutate({ key, value: newValue });
   };
 
-  return [value, setSetting, loading] as const;
+  return [
+    value as typeof defaultValue extends undefined
+      ? typeof value
+      : NonNullable<typeof value>,
+    setSetting,
+    loading,
+  ] as const;
 };
