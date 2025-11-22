@@ -2,7 +2,6 @@
 
 import type {
   ColumnFiltersState,
-  ColumnOrderState,
   ColumnPinningState,
   ExpandedState,
   GroupingState,
@@ -46,6 +45,7 @@ import {
   TableHeader,
   TableRow,
 } from "~/components/ui/table";
+import { useSetting } from "~/contexts/settings";
 import { usePreviousValue } from "~/hooks/previous-value";
 import { useResponsive } from "~/hooks/responsive";
 import { cn } from "~/lib/utils";
@@ -171,6 +171,9 @@ export type DataTableProps<TData> = {
 
   /** Whether or not active style a row */
   getActiveRow?: (row: Row<TData, TData>) => boolean;
+
+  /** Key to save configs in settings */
+  settingsKey?: string;
 
   /**
    * Maximum rows in card view
@@ -343,6 +346,7 @@ const InnerDataTable = <TData,>(
     defaultPageSize = 100,
     maxRows = 4,
     minCollapsableRows = 4,
+    settingsKey = "default",
     enableExactSearch = true,
     enableHeaderBorder = false,
     enableTextSelection = false,
@@ -366,13 +370,17 @@ const InnerDataTable = <TData,>(
   const formatter = useFormatter();
   const { isMdUp } = useResponsive();
   const defaultGroupingRef = React.useRef(defaultGrouping);
-  const [columnOrder, setColumnOrder] = React.useState<ColumnOrderState>([
-    "index",
-    ...columns
-      .filter((column) => !column.invisible)
-      .map((column) => column.id!),
-  ]);
-  const [columnVisibility, setColumnVisibility] = React.useState(
+  const [columnOrder, setColumnOrder] = useSetting(
+    `tables.${settingsKey}.columnOrder`,
+    [
+      "index",
+      ...columns
+        .filter((column) => !column.invisible)
+        .map((column) => column.id!),
+    ],
+  );
+  const [columnVisibility, setColumnVisibility] = useSetting(
+    `tables.${settingsKey}.columnVisibility`,
     defaultColumnVisibility ?? {},
   );
   const [columnFilters, setColumnFilters] = React.useState(

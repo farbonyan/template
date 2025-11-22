@@ -1,20 +1,19 @@
 "use client";
 
+import type { NestedKeyOf, NestedValueOf } from "next-intl";
 import * as React from "react";
 
 import { api } from "~/trpc/react";
 
 type SettingsType = {
   displayMenu: "slider" | "sticky";
-  autoplay: boolean;
-  fontSize: number;
   widgets: string[][];
-  filters: Record<
+  tables: Record<
     string,
     {
-      name: string;
-      value: string | number | (string | number)[];
-    }[]
+      columnVisibility: Record<string, boolean>;
+      columnOrder: string[];
+    }
   >;
 };
 
@@ -31,10 +30,8 @@ export type SettingProviderProps = { children: React.ReactNode };
 
 export const defaultSettings: SettingsType = {
   displayMenu: "sticky",
-  autoplay: false,
-  fontSize: 0.75,
   widgets: [["events-scheduler"]],
-  filters: {},
+  tables: {},
 };
 
 export const SettingProvider = ({ children }: SettingProviderProps) => {
@@ -63,21 +60,72 @@ export const useSettings = () => {
   return context;
 };
 
-export const useSetting = <K extends keyof SettingsType>(key: K) => {
+export const useSetting = <K extends NestedKeyOf<SettingsType>>(
+  key: K,
+  defaultValue?: NestedValueOf<SettingsType, K>,
+) => {
   const { settings, loading } = useSettings();
   const utils = api.useUtils();
+
   const setSettingMutation = api.setting.set.useMutation({
-    onSuccess: async () => {
+    async onMutate({ key: k, value: v }) {
+      try {
+        const previous = utils.setting.all.getData();
+        if (previous) {
+          const next = { ...previous, [k]: v as unknown };
+          utils.setting.all.setData(undefined, next);
+        }
+        return { previous };
+      } catch {
+        return { previous: undefined };
+      }
+    },
+    onError(_err, _vars, context) {
+      if (context?.previous) {
+        utils.setting.all.setData(undefined, context.previous);
+      }
+    },
+    onSettled: async () => {
       await utils.setting.all.refetch();
     },
   });
 
-  const setSetting = React.useCallback(
-    (value: SettingsType[K]) => {
-      setSettingMutation.mutate({ key, value });
-    },
-    [key, setSettingMutation],
-  );
+  const readFromSettings = (s: unknown, k: string) => {
+    if (!s || typeof s !== "object") return undefined;
+    if ((s as Record<string, unknown>)[k] !== undefined) {
+      return (s as Record<string, unknown>)[k];
+    }
+    const parts = k.split(".");
+    let cur: object | undefined = s;
+    for (const p of parts) {
+      if (typeof cur === "object" && p in cur) {
+        cur = cur[p as keyof typeof cur];
+      } else {
+        cur = undefined;
+        break;
+      }
+    }
+    return cur;
+  };
 
-  return [settings[key], setSetting, loading] as const;
+  const value = React.useMemo(() => {
+    const raw = readFromSettings(settings, String(key));
+    return (raw as NestedValueOf<SettingsType, K> | undefined) ?? defaultValue;
+  }, [settings, key, defaultValue]);
+
+  const setSetting = (
+    updater: React.SetStateAction<NestedValueOf<SettingsType, K>>,
+  ) => {
+    const newValue =
+      typeof updater === "function"
+        ? (
+            updater as (
+              prev: NestedValueOf<SettingsType, K> | undefined,
+            ) => NestedValueOf<SettingsType, K>
+          )(value)
+        : updater;
+    setSettingMutation.mutate({ key, value: newValue });
+  };
+
+  return [value, setSetting, loading] as const;
 };

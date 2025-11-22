@@ -120,7 +120,7 @@ const getTableContext = ({
   return {
     name: getCases(table.name),
     tree: !!parent,
-    softDelete: !!table.columns.find((column) => column.name === "IsDeleted"),
+    softDelete: !!table.columns.find((column) => column.name === "deletedAt"),
     specialColumns: {
       title: title,
       primary: primary,

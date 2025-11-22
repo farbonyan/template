@@ -35,6 +35,7 @@ export const SystemProvider = ({ children }: { children: React.ReactNode }) => {
       {
         title: "",
         icon: CpuIcon,
+        expandable: true,
         menus: [
           {
             label: t("pages.template.title"),
