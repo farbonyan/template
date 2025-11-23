@@ -27,6 +27,7 @@ import type { DefaultValues } from "~/components/ui/form";
     TableCell,
     TableHead,
     TableHeader,
+    TableFooter,
     TableRow,
   } from "~/components/ui/table";
   import { Button } from "~/components/ui/button";
@@ -545,7 +546,11 @@ export type {{main.name.singular.pascal}}Schema = z.infer<typeof {{main.name.sin
                     </SortableContext>
                     <TableFooter className="sticky -bottom-px z-30 border-b-0 text-muted-foreground shadow-sm">
                       <TableRow className="h-px border-b-0">
-                        <TableCell></TableCell>
+                        <TableCell>
+                          {t("{{name.plural.kebab}}.count", {
+                            count: {{name.plural.camel}}Field.fields.length,
+                          })}
+                        </TableCell>
                         {{#table.columns}}
                           {{#isForm}}
                             {{#isNumber}}

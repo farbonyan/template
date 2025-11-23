@@ -97,7 +97,8 @@
       {{/main.table.columns}}
       {{#children}}
         , "{{name.plural.kebab}}": {
-          "label": "{{name.plural.title}}"
+          "label": "{{name.plural.title}}",
+          "count": "Count: {count, number}"
         },
         "{{name.singular.kebab}}": {
           {{#table.columns}}
