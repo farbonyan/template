@@ -74,6 +74,31 @@ export const uniqueByKey = <TObj, TKey extends keyof TObj>(
 };
 
 /**
+ * Get single unique value of object that is the same in whole array
+ *
+ * @param array Array of data
+ * @param key Key of data item that would be unique in result
+ * @returns Single unique value of a key in objects
+ */
+export const getUniqueValue = <TObj, TKey extends keyof TObj>(
+  array: TObj[],
+  key: TKey,
+  filterEmpty?: boolean,
+) => {
+  const values = [
+    ...new Set(
+      (filterEmpty
+        ? array.filter(
+            (item) => item[key] !== null && typeof item[key] !== "undefined",
+          )
+        : array
+      ).map((item) => item[key]),
+    ),
+  ];
+  return values.length === 1 ? values[0] : undefined;
+};
+
+/**
  * Get sum of a list of numbers
  *
  * @param array Array of numbers
@@ -111,9 +136,8 @@ export const splitMaxByKey = <TObj, TKey extends keyof TObj>(
 };
 
 /** Tree node type of generic type T with configurable children key */
-export type TreeNode<T, K extends string = "_children"> = T & {
-  [key in K]?: TreeNode<T, K>[];
-};
+export type TreeNode<T, K extends string = "_children"> = T &
+  Partial<Record<K, TreeNode<T, K>[]>>;
 
 /** Tree type of generic type T with configurable children key */
 export type Tree<T, K extends string = "_children"> = TreeNode<T, K>[];

@@ -189,10 +189,10 @@ const Scheduler = ({
                           </Button>
                         )}
                       </div>
-                      <div className="flex-1">
+                      <div className="flex-1 overflow-hidden">
                         <AccordionTrigger
                           disabled={!event.description}
-                          className="gap-2 py-2 text-background text-white hover:no-underline disabled:text-background [&:disabled>svg]:hidden"
+                          className="gap-2 overflow-hidden py-2 text-background text-white hover:no-underline disabled:text-background [&:disabled>svg]:hidden"
                         >
                           <div className="flex flex-1 items-center justify-center gap-2 overflow-hidden">
                             <span className="truncate">{event.title}</span>
@@ -301,7 +301,7 @@ const Scheduler = ({
           </div>
         </div>
       </div>
-      <div className="flex flex-1 flex-col ~mt-2/4">
+      <div className="~mt-2/4 flex flex-1 flex-col">
         <Table className="table-fixed">
           <TableBody>
             <TableRow>
@@ -350,7 +350,10 @@ const Scheduler = ({
 
                     return (
                       <ContextMenu key={dayIndex}>
-                        <ContextMenuTrigger asChild>
+                        <ContextMenuTrigger
+                          asChild
+                          disabled={!events?.length && !onCreate}
+                        >
                           <TableCell
                             className={cn(
                               "relative border bg-muted/40 p-0 align-top text-base",

@@ -190,6 +190,13 @@ export type DataTableProps<TData> = {
   minCollapsableRows?: number;
 
   /**
+   * Filter from leaf rows
+   *
+   * @default true
+   */
+  filterFromLeafRows?: boolean;
+
+  /**
    * Enable exact search
    *
    * @default true
@@ -347,6 +354,7 @@ const InnerDataTable = <TData,>(
     maxRows = 4,
     minCollapsableRows = 4,
     settingsKey = "default",
+    filterFromLeafRows = true,
     enableExactSearch = true,
     enableHeaderBorder = false,
     enableTextSelection = false,
@@ -370,14 +378,9 @@ const InnerDataTable = <TData,>(
   const formatter = useFormatter();
   const { isMdUp } = useResponsive();
   const defaultGroupingRef = React.useRef(defaultGrouping);
-  const [columnOrder, setColumnOrder] = useSetting(
+  const [storedColumnOrder, setStoredColumnOrder] = useSetting(
     `tables.${settingsKey}.columnOrder`,
-    [
-      "index",
-      ...columns
-        .filter((column) => !column.invisible)
-        .map((column) => column.id!),
-    ],
+    ["index", ...columns.filter((c) => !c.invisible).map((c) => c.id!)],
   );
   const [columnVisibility, setColumnVisibility] = useSetting(
     `tables.${settingsKey}.columnVisibility`,
@@ -400,6 +403,18 @@ const InnerDataTable = <TData,>(
   const [openRowDetails, setOpenRowDetails] =
     React.useState<Row<TData, TData>>();
   const [isZoomFullScreen, setIsZoomFullScreen] = React.useState(false);
+
+  const columnOrder = React.useMemo(() => {
+    const actual = [
+      "index",
+      ...columns.filter((c) => !c.invisible).map((c) => c.id!),
+    ];
+    const merged = [
+      ...storedColumnOrder.filter((id) => actual.includes(id)),
+      ...actual.filter((id) => !storedColumnOrder.includes(id)),
+    ];
+    return merged;
+  }, [storedColumnOrder, columns]);
 
   usePreviousValue(data, () => {
     if (Object.keys(tableRowSelection).length) {
@@ -467,6 +482,8 @@ const InnerDataTable = <TData,>(
     enableMultiRowSelection,
     enableGrouping,
     enableGlobalFilter,
+    enablePinning,
+    filterFromLeafRows,
     globalFilterFn: enableExactSearch ? "includesString" : "fuzzy",
     groupedColumnMode: false,
     enableRowSelection: (row) => {
@@ -476,13 +493,11 @@ const InnerDataTable = <TData,>(
       return row.subRows.some((subRow) => !getSelectDisabled?.(subRow));
     },
     autoResetExpanded: false,
-    filterFromLeafRows: true,
-    enablePinning: enablePinning,
     manualPagination: !enableChangePage,
     getRowId,
     getSubRows,
     onExpandedChange: setExpanded,
-    onColumnOrderChange: setColumnOrder,
+    onColumnOrderChange: setStoredColumnOrder,
     onColumnFiltersChange: setColumnFilters,
     onColumnPinningChange: setColumnPinning,
     onGlobalFilterChange: setGlobalFilter,
@@ -661,6 +676,7 @@ const InnerDataTable = <TData,>(
                         table={table}
                         header={header}
                         rowSpan={rowSpan}
+                        columnOrder={columnOrder}
                         enableHeaderBorder={enableHeaderBorder}
                         enableColumnOrdering={enableColumnOrdering}
                         enableGrouping={enableGrouping}

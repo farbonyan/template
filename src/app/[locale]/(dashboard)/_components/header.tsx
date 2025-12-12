@@ -5,6 +5,7 @@ import Image from "next/image";
 import { LogOutIcon, MenuIcon, SearchIcon } from "lucide-react";
 import { signOut, useSession } from "next-auth/react";
 import { useTranslations } from "next-intl";
+import { useTheme } from "next-themes";
 
 import { Button } from "~/components/ui/button";
 import { DebouncedTextInput } from "~/components/ui/debounced-text-input";
@@ -19,13 +20,11 @@ import {
   SheetTitle,
   SheetTrigger,
 } from "~/components/ui/sheet";
-import { useTheme } from "~/components/ui/theme";
 import { VisuallyHidden } from "~/components/ui/visually-hidden";
 import { useSetting } from "~/contexts/settings";
 import { useMenuItems } from "~/contexts/systems";
 import { useIsRtl } from "~/hooks/is-rtl";
 import { useResponsive } from "~/hooks/responsive";
-import { Link } from "~/i18n/routing";
 import { cn } from "~/lib/utils";
 import { Customization } from "./customization";
 import { Menu } from "./menu";
@@ -35,8 +34,8 @@ import { Profile } from "./profile";
 export const Header = () => {
   const t = useTranslations("pages.index.header");
   const session = useSession();
-  const { resolvedTheme } = useTheme();
   const isRtl = useIsRtl();
+  const { resolvedTheme } = useTheme();
   const { isMdUp } = useResponsive();
   const [displayMenu] = useSetting("displayMenu");
   const [open, setOpen] = React.useState(false);
@@ -61,7 +60,7 @@ export const Header = () => {
           </SheetTrigger>
           <SheetContent
             side={isRtl ? "right" : "left"}
-            className="flex h-full flex-col overflow-hidden p-0"
+            className="flex h-full flex-col overflow-hidden p-0 pb-4"
           >
             <VisuallyHidden>
               <SheetHeader>
@@ -69,10 +68,10 @@ export const Header = () => {
                 <SheetDescription>{t("title")}</SheetDescription>
               </SheetHeader>
             </VisuallyHidden>
-            <ScrollArea className="flex-1 ~p-2/4 [&>div>div]:!block">
+            <ScrollArea className="~p-2/4 flex-1 [&>div>div]:!block">
               {session.status === "authenticated" && (
                 <>
-                  <Profile session={session.data} />
+                  <Profile />
                   <Separator className="my-8" />
                 </>
               )}
@@ -106,39 +105,28 @@ export const Header = () => {
               )}
             </ScrollArea>
             <Image
-              src={
-                resolvedTheme === "dark"
-                  ? "/img/app-logo-dark.png"
-                  : "/img/app-logo-light.png"
-              }
-              alt="logo"
-              unoptimized
               priority
-              width="400"
-              height="200"
-              sizes="100vw"
-              className="mx-auto h-32 w-auto"
+              src="/img/logo.png"
+              alt="logo"
+              width={800}
+              height={800}
+              className="mx-auto aspect-auto w-24"
             />
           </SheetContent>
         </Sheet>
-        <Link href="/">
-          <Image
-            src={
-              resolvedTheme === "dark"
-                ? "/img/logo-header-dark.png"
-                : "/img/logo-header-light.png"
-            }
-            alt="logo"
-            unoptimized
-            priority
-            width="400"
-            height="200"
-            sizes="100vw"
-            className="ms-2 h-9 w-auto"
-          />
-        </Link>
+        <Image
+          src={
+            resolvedTheme === "dark"
+              ? "/img/logo-header-dark.png"
+              : "/img/logo-header-light.png"
+          }
+          alt="logo"
+          width={400}
+          height={200}
+          className="ms-4 aspect-auto w-48"
+        />
       </div>
-      <div className="flex items-center ~gap-2/4">
+      <div className="~gap-2/4 flex items-center">
         <Customization />
         <Logo className="-me-3 size-12" />
       </div>

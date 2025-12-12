@@ -123,10 +123,11 @@ export const getColumnDefaultData = ({
   }
 
   // Default: treat as TEXT
+  const variant = { type: "text", options: [] } as const;
   return {
     ...base,
     search: !column.primary,
     type: "string",
-    variant: { type: "text" },
+    variant,
   };
 };

@@ -33,14 +33,13 @@ export const SystemProvider = ({ children }: { children: React.ReactNode }) => {
   const systems = React.useMemo<TSystem[]>(() => {
     return [
       {
-        title: "",
+        title: t("pages.development.title"),
         icon: CpuIcon,
-        expandable: true,
         menus: [
           {
             label: t("pages.template.title"),
             icon: ClipboardListIcon,
-            permitted: true,
+            permitted: process.env.NODE_ENV === "development",
             link: ["template.create", undefined] satisfies SystemLink,
           },
         ],

@@ -6,10 +6,10 @@ import { Input } from "./input";
 
 type NumericInputProps = Omit<
   React.ComponentProps<typeof Input>,
-  "type" | "onChange"
+  "type" | "value" | "onChange"
 > & {
-  value?: string;
-  onChange?: (value: string) => void;
+  value?: string | null;
+  onChange?: (value: string | null) => void;
 };
 
 const NumericInput = React.forwardRef<
@@ -21,7 +21,7 @@ const NumericInput = React.forwardRef<
   const numericFormatter = useNumericFormatter();
 
   const formatValue = React.useCallback(
-    (v: string | undefined) => {
+    (v: string | null | undefined) => {
       if (!v) return "";
       return numericFormatter(v);
     },

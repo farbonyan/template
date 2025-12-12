@@ -64,6 +64,11 @@
         "menu": {
           "placeholder": "جست‌وجو منو",
           "sign-out": "خروج"
+        },
+        "profile": {
+          "title": "ویرایش پروفایل",
+          "account": "اطلاعات کاربری",
+          "password": "تغییر رمزعبور"
         }
       }
     },
@@ -74,6 +79,9 @@
         "drop-here-to-remove": "برای حذف به اینجا بکشید"
       }
     },
+    "development": {
+      "title": "توسعه سیستم"
+    },
     "template": {
       "title": "ساخت سیستم جدید",
       "toasts": {
@@ -81,6 +89,52 @@
           "success": "ساخت سیستم با موفقیت انجام شد",
           "error": "ساخت سیستم با مشکل مواجه شد"
         }
+      }
+    },
+    "users": {
+      "title": "کاربران",
+      "table": {
+        "columns": {
+          "id": "شناسه",
+          "name": "نام",
+          "username": "نام کاربری",
+          "position": "سمت",
+          "created-at": "زمان ساخت",
+          "updated-at": "زمان ویرایش"
+        },
+        "aggregations": {
+          "count": "تعداد: {count, number}"
+        },
+        "actions": {
+          "edit": "ویرایش",
+          "delete": {
+            "name": "حذف",
+            "confirmation": {
+              "title": "حذف {name}",
+              "message": "آیا از حذف \"{name}\" اطمینان دارید؟",
+              "yes": "بله",
+              "no": "خیر"
+            }
+          }
+        }
+      },
+      "toasts": {
+        "create": {
+          "success": "ساخت کاربر با موفقیت انجام شد",
+          "error": "ساخت کاربر با مشکل مواجه شد"
+        },
+        "update": {
+          "success": "ویرایش کاربر با موفقیت انجام شد",
+          "error": "ویرایش کاربر با مشکل مواجه شد"
+        },
+        "delete": {
+          "success": "حذف کاربر با موفقیت انجام شد",
+          "error": "حذف کاربر با مشکل مواجه شد"
+        }
+      },
+      "single": {
+        "create-title": "ثبت کاربر جدید",
+        "update-title": "ویرایش کاربر \"{name}\""
       }
     }
   },
@@ -145,6 +199,79 @@
         "type": "نوع",
         "extra": "اطلاعات اضافی"
       }
+    },
+    "user": {
+      "name": {
+        "label": "نام",
+        "placeholder": "لطفا نام را وارد کنید"
+      },
+      "username": {
+        "label": "نام کاربری",
+        "placeholder": "لطفا نام کاربری را وارد کنید"
+      },
+      "position": {
+        "label": "سمت",
+        "placeholder": "لطفا سمت را وارد کنید"
+      },
+      "password": {
+        "label": "رمز عبور",
+        "placeholder": "لطفا رمز عبور را وارد کنید"
+      }
+    }
+  },
+  "widgets": {
+    "events": {
+      "title": "رویداد‌ها",
+      "create-title": "ایجاد رویداد جدید",
+      "update-title": "به‌روزرسانی رویداد \"{name}\"",
+      "create": {
+        "error": "ایجاد رویداد با مشکل مواجه شد"
+      },
+      "update": {
+        "error": "ویرایش رویداد با مشکل مواجه شد"
+      },
+      "delete": {
+        "error": "حذف رویداد با مشکل مواجه شد"
+      }
+    },
+    "profile": {
+      "name": {
+        "label": "نام",
+        "placeholder": "لطفا نام را وارد کنید"
+      },
+      "username": {
+        "label": "نام کاربری",
+        "placeholder": "لطفا نام کاربری را وارد کنید"
+      },
+      "position": {
+        "label": "سمت",
+        "placeholder": "لطفا سمت را وارد کنید"
+      },
+      "cancel": "انصراف",
+      "submit": "ثبت"
+    },
+    "password": {
+      "current-password": {
+        "label": "رمز عبور فعلی",
+        "placeholder": "لطفا رمز عبور فعلی را وارد کنید"
+      },
+      "password": {
+        "label": "رمز عبور جدید",
+        "placeholder": "لطفا رمز عبور جدید را وارد کنید",
+        "hints": {
+          "min-length": "حداقل ۶ کاراکتر باشد",
+          "lower-chars": "شامل حروف کوچک انگلیسی باشد",
+          "upper-chars": "شامل حروف بزرگ انگلیسی باشد",
+          "numbers": "شامل اعداد باشد",
+          "special-chars": "شامل علائم خاص باشد: #?!@$%^&*-"
+        }
+      },
+      "confirm-password": {
+        "label": "تایید رمز عبور",
+        "placeholder": "لطفا مجددا رمز عبور جدید را وارد کنید"
+      },
+      "cancel": "انصراف",
+      "submit": "ثبت"
     }
   },
   "components": {

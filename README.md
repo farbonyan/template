@@ -1,97 +1,145 @@
-# 🧠 Smart Assistant
+# {{ PROJECT_NAME }}
 
-An intelligent, LLM-based assistant for data-driven organizations — capable of natural language chat, contextual analysis, and automated report generation from your connected databases.
+> **Tip:** Keep the name short, memorable, and relevant.
+> Avoid vague names like _“core-app”_ or _“new-project”_.
+> Good examples: **Atlas CRM**, **Ledger Sync**, **Pulse Scheduler**, etc.
 
-## 🚀 Overview
+A brief description of what this project does and why it exists.
 
-**Smart Assistant** connects to your internal databases and transforms raw data into meaningful insights.  
-Ask questions in natural language, and the assistant will understand context, query your data, and generate reports, charts, and summaries — all through a conversational interface.
-
-## ✨ Key Features
-
-- 💬 **Conversational Interface** — Chat with your data using natural language.
-- 🧩 **LLM-Powered Intelligence** — Built on state-of-the-art language models for reasoning and summarization.
-- 🔗 **Database Integration** — Connects securely to multiple relational data sources (e.g., PostgreSQL, MySQL, MSSQL).
-- 📊 **Dynamic Report Generation** — Creates detailed analytics reports and visualizations directly from queries.
-- 🧠 **Context Awareness** — Maintains conversation context to understand multi-step requests.
+> **Tip:** One or two sentences max.
+> State the problem, state the value.
+> Example: “A lightweight CRM to track people, projects, and their interactions.”
 
 ---
 
-## 🏗️ Architecture
+## Overview
 
-```
+Use this section to explain the goal of the project and what it’s meant to solve.
 
-User ──► Chat Interface ──► Smart Assistant (LLM Engine)
-│
-▼
-Data Connector Layer
-├── PostgreSQL
-├── MySQL
-├── MSSQL
-└── SQLite
-│
-▼
-Report Generator
-├── Tables & Charts
-├── Summaries
-└── PDF/Excel Export
-
-```
-
-## ⚙️ Tech Stack
-
-- **Backend:** Python + FastAPI
-- **Frontend:** React + TailwindCSS
-- **LLM Engine:** Meta llama4 / local model via API
-- **Database Layer:** Prisma ORM
-- **Visualization:** Recharts / React Table
-- **Containerization:** Docker & Docker Compose
-
-## 🧩 Usage
-
-1. Open the web app (`http://localhost:3000`).
-2. Connect your database (if not already configured).
-3. Ask questions like:
-
-   - _“Show me total revenue for Q3.”_
-   - _“Generate a report of user activity by month.”_
-   - _“Summarize recent sales trends in the past 6 months.”_
-
-4. Export generated reports in PDF or Excel format.
-
-## 🔐 Security
-
-- All credentials are stored securely and never transmitted to third-party servers.
-- Supports read-only database connections for safe data exploration.
-- LLM queries are filtered and sanitized before execution.
+> **Tip:**
+>
+> - Don’t list features here—save that for the next section.
+> - Explain the _why_ behind the project.
+> - Make it understandable to someone who isn’t you in 6 months.
 
 ---
 
-## 🧭 Roadmap
+## Features
 
-- [ ] Multi-database query federation
-- [ ] Fine-tuned domain models
-- [ ] Custom report templates
-- [ ] Knowledge base growth
+List the core capabilities your project provides.
 
-## 🧑‍💻 Contributing
+> **Tip:** Start broad, then go more specific as the project evolves.
 
-Contributions are welcome!
-Fork the repository, make your changes, and submit a PR.
+Examples:
 
-## 🧠 Example Query Flow
+- Manage entities (e.g., projects, people, tasks, resources)
+- Track interactions or records
+- Provide clean relationships between data types
+- Offer a simple, non-bloated workflow
+- Expose an API for programmatic use
 
-**User:**
+---
 
-> Generate a report comparing last quarter's expenses with revenue.
+## Tech Stack
 
-**Assistant:**
+Document the technologies used.
 
-> - Queries `expenses` and `revenue` tables
-> - Aggregates totals by month
-> - Calculates growth ratios
-> - Outputs a table and chart and summary report
+> **Tip:** Keep this high-level. People don’t need a dependency list here.
 
-## 📄 License
+Example (modify as needed):
 
-MIT License © 2025 [Farbonyan]
+- **Framework:** Next.js (App Router)
+- **API Layer:** tRPC
+- **Database:** SQLite (via Prisma ORM)
+- **Frontend:** React + Tailwind
+
+---
+
+## Getting Started
+
+1. Clone the repository:
+
+   ```bash
+   git clone <repo-url>
+   ```
+
+2. Install dependencies:
+
+   ```bash
+   pnpm install
+   ```
+
+3. Configure environment variables:
+
+   > **Tip:**
+   >
+   > - Add a `.env.example` file in the template repo.
+   > - Keep it minimal—only required variables.
+
+4. Run database migrations:
+
+   ```bash
+   pnpm db:migrate:dev
+   ```
+
+5. Start the development server:
+
+   ```bash
+   pnpm dev
+   ```
+
+---
+
+## Usage
+
+Explain the general workflow or how this template is intended to be extended.
+
+> **Tip:** Be generic here; this is a template.
+
+Examples:
+
+- Start by defining your domain models.
+- Extend the API routers under `/server/api/`.
+- Add new UI modules in `/app/`.
+- Use the existing CRUD patterns as a reference.
+
+---
+
+## Project Structure
+
+> **Tip:** Give a quick map so future-you (or colleagues) don’t waste time rediscovering layout choices.
+
+Example:
+
+```
+/app             → UI routes & components
+/server          → tRPC routers, server logic
+/prisma          → Schema & migrations
+/src/components  → Reusable UI components
+```
+
+---
+
+## Customization Tips
+
+A section dedicated to reminding yourself how to adjust this template for the _next_ project.
+
+- Rename placeholder domains (e.g., Project, Person, Call) to match your new project.
+- Update Prisma models first; let the schema drive the rest.
+- Remove modules you don’t need.
+- Add scripts early (lint, format, seed).
+- Define key conventions at the beginning (file naming, API shape, folder structure).
+
+---
+
+## Contributing
+
+Since this is a template, keep it open to improvements.
+
+> **Tip:** Don’t overthink this section—just keep the door open.
+
+---
+
+## License
+
+MIT (modify if needed)

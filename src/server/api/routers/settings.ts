@@ -11,9 +11,10 @@ export const settingRouter = createTRPCRouter({
     );
   }),
   set: protectedProcedure
-    .input(z.object({ key: z.string(), value: z.any() }))
+    .input(z.object({ key: z.string().trim(), value: z.any() }))
     .mutation(async ({ ctx, input }) => {
       return ctx.db.setting.upsert({
+        select: { id: true },
         where: { key_userId: { userId: ctx.session.user.id, key: input.key } },
         create: {
           userId: ctx.session.user.id,

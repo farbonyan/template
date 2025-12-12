@@ -2,14 +2,22 @@ import bcrypt from "bcrypt";
 
 import { prisma } from "./prisma";
 
-export const seedUsers = async () => {
+interface SeedUserInput {
+  name: string;
+  username: string;
+  password: string;
+  position: string;
+}
+
+export const seedUser = async (input: SeedUserInput) => {
   const salt = await bcrypt.genSalt(10);
-  return await prisma.user.createMany({
+
+  return prisma.user.create({
     data: {
-      name: "Mohsen Karbaschi",
-      username: "mk@123",
-      password: await bcrypt.hash("test", salt),
-      position: "CEO",
+      name: input.name,
+      username: input.username,
+      password: await bcrypt.hash(input.password, salt),
+      position: input.position,
     },
   });
 };

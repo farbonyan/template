@@ -47,6 +47,7 @@ import { getCommonPinningStyles } from "./utils";
 type Props<TData> = {
   table: Table<TData>;
   header: Header<TData, unknown>;
+  columnOrder: string[];
   rowSpan?: number;
   enableHeaderBorder?: boolean;
   enableColumnOrdering?: boolean;
@@ -68,6 +69,7 @@ export const DataTableHead = <TData,>({
   table,
   header,
   rowSpan = 1,
+  columnOrder,
   enableHeaderBorder = false,
   enableColumnOrdering = true,
   enableGrouping = true,
@@ -79,11 +81,11 @@ export const DataTableHead = <TData,>({
     accept: "column",
     drop: (draggedColumn) => {
       if (draggedColumn.id === header.column.id) return;
-      table.setColumnOrder((columnOrder) => {
-        const srcColumnIndex = columnOrder.indexOf(draggedColumn.id);
-        const targetColumnIndex = columnOrder.indexOf(header.column.id);
-        return move(columnOrder, srcColumnIndex, targetColumnIndex);
-      });
+      const srcColumnIndex = columnOrder.indexOf(draggedColumn.id);
+      const targetColumnIndex = columnOrder.indexOf(header.column.id);
+      table.setColumnOrder(
+        move(columnOrder, srcColumnIndex, targetColumnIndex),
+      );
     },
   });
 
@@ -209,7 +211,7 @@ export const DataTableHead = <TData,>({
     >
       <ContextMenu>
         <ContextMenuTrigger
-          className="flex h-full w-full items-center justify-center bg-table-header ~px-2/4"
+          className="~px-2/4 flex h-full w-full items-center justify-center bg-table-header"
           onContextMenu={(e) => e.stopPropagation()}
         >
           <div className="flex flex-1 items-center gap-2">

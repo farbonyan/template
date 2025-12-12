@@ -9,7 +9,7 @@ import {
 
 export const {{main.name.singular.camel}}Router = createTRPCRouter({
   all: protectedProcedure.query(async ({ ctx }) => {
-    const {{main.name.plural.camel}} = await ctx.db.{{main.table.name.original}}.findMany({
+    return await ctx.db.{{main.table.name.camel}}.findMany({
       select: {
         {{#main.table.columns}}
           {{#isTable}}
@@ -28,63 +28,9 @@ export const {{main.name.singular.camel}}Router = createTRPCRouter({
       where: { deletedAt: null },
       {{/main.table.softDelete}}
     });
-    {{#main.table.tree}}
-      return makeTree({{main.name.plural.camel}}.map(({{main.name.singular.camel}}) => ({
-        {{#main.table.columns}}
-          {{#isPrimary}}
-            {{name.camel}}: {{main.name.singular.camel}}.{{name.original}}{{#isNumber}}.toString(){{/isNumber}},
-          {{/isPrimary}}
-          {{^isPrimary}}
-            {{#isTable}}
-              {{#isParent}}
-                {{name.camel}}: {{main.name.singular.camel}}.{{name.original}}{{#isNumber}}?.toString(){{/isNumber}},
-              {{/isParent}}
-              {{^isParent}}
-                {{#isRelation}}
-                  {{name.camel}}: {{main.name.singular.camel}}.{{name.original}}{{#isNumber}}.toString(){{/isNumber}},
-                {{/isRelation}}
-                {{^isRelation}}
-                  {{name.camel}}: {{main.name.singular.camel}}.{{name.original}}{{#isSelect}} as {{#options}}"{{option}}"{{#comma}}|{{/comma}}{{/options}}{{/isSelect}},
-                {{/isRelation}}
-              {{/isParent}}
-            {{/isTable}}
-          {{/isPrimary}}
-        {{/main.table.columns}}
-        {{#children}}
-          {{name.plural.camel}}Count: {{main.name.singular.camel}}._count.{{table.name.original}},
-        {{/children}}
-      })), "{{main.table.specialColumns.primary.name.camel}}", "{{main.table.specialColumns.parent.name.camel}}")
-    {{/main.table.tree}}
-    {{^main.table.tree}}
-      return {{main.name.plural.camel}}.map(({{main.name.singular.camel}}) => ({
-        {{#main.table.columns}}
-          {{#isPrimary}}
-            {{name.camel}}: {{main.name.singular.camel}}.{{name.original}}{{#isNumber}}.toString(){{/isNumber}},
-          {{/isPrimary}}
-          {{^isPrimary}}
-            {{#isTable}}
-              {{#isParent}}
-                {{name.camel}}: {{main.name.singular.camel}}.{{name.original}}{{#isNumber}}?.toString(){{/isNumber}},
-              {{/isParent}}
-              {{^isParent}}
-                {{#isRelation}}
-                  {{name.camel}}: {{main.name.singular.camel}}.{{name.original}}{{#isNumber}}.toString(){{/isNumber}},
-                {{/isRelation}}
-                {{^isRelation}}
-                  {{name.camel}}: {{main.name.singular.camel}}.{{name.original}}{{#isSelect}} as {{#options}}"{{option}}"{{#comma}}|{{/comma}}{{/options}}{{/isSelect}},
-                {{/isRelation}}
-              {{/isParent}}
-            {{/isTable}}
-          {{/isPrimary}}
-        {{/main.table.columns}}
-        {{#children}}
-          {{name.plural.camel}}Count: {{main.name.singular.camel}}._count.{{table.name.original}},
-        {{/children}}
-      }))
-    {{/main.table.tree}}
   }),
   dropdown: protectedProcedure.query(async ({ ctx }) => {
-    const {{main.name.plural.camel}} = await ctx.db.{{main.table.name.original}}.findMany({
+    return await ctx.db.{{main.table.name.camel}}.findMany({
       select: {
         {{main.table.specialColumns.primary.name.original}}: true,
         {{main.table.specialColumns.title.name.original}}: true,
@@ -96,24 +42,11 @@ export const {{main.name.singular.camel}}Router = createTRPCRouter({
       where: { deletedAt: null },
       {{/main.table.softDelete}}
     });
-    {{#main.table.tree}}
-      return makeTree({{main.name.plural.camel}}.map(({{main.name.singular.camel}}) => ({
-        id: {{main.name.singular.camel}}.{{main.table.specialColumns.primary.name.original}}{{#main.table.specialColumns.primary.isNumber}}.toString(){{/main.table.specialColumns.primary.isNumber}},
-        content: {{main.name.singular.camel}}.{{main.table.specialColumns.title.name.original}},
-        parent: {{main.name.singular.camel}}.{{main.table.specialColumns.parent.name.original}}{{#main.table.specialColumns.parent.isNumber}}.toString(){{/main.table.specialColumns.parent.isNumber}},
-      })), "id", "parent");
-    {{/main.table.tree}}
-    {{^main.table.tree}}
-      return {{main.name.plural.camel}}.map(({{main.name.singular.camel}}) => ({
-        id: {{main.name.singular.camel}}.{{main.table.specialColumns.primary.name.original}}{{#main.table.specialColumns.primary.isNumber}}.toString(){{/main.table.specialColumns.primary.isNumber}},
-        content: {{main.name.singular.camel}}.{{main.table.specialColumns.title.name.original}},
-      }));
-    {{/main.table.tree}}
   }),
   single: protectedProcedure
-    .input(z.string(){{#main.table.specialColumns.primary.isNumber}}.transform((id) => Number.parseInt(id)){{/main.table.specialColumns.primary.isNumber}})
+    .input(z.string().uuid())
     .query(async ({ input, ctx }) => {
-      const {{main.name.singular.camel}} = await ctx.db.{{main.table.name.original}}.findUnique({
+      return await ctx.db.{{main.table.name.camel}}.findUnique({
         select: {
           {{#main.table.columns}}
             {{#isPrimary}}
@@ -149,53 +82,6 @@ export const {{main.name.singular.camel}}Router = createTRPCRouter({
           {{/main.table.softDelete}}
         },
       });
-      if (!{{main.name.singular.camel}}) return null;
-      return {
-        {{#main.table.columns}}
-          {{#isPrimary}}
-            {{name.camel}}: {{main.name.singular.camel}}.{{name.original}}{{#isNumber}}.toString(){{/isNumber}},
-          {{/isPrimary}}
-          {{^isPrimary}}
-            {{#isForm}}
-              {{#isParent}}
-                {{name.camel}}: {{main.name.singular.camel}}.{{name.original}}{{#isNumber}}?.toString(){{/isNumber}},
-              {{/isParent}}
-              {{^isParent}}
-                {{#isRelation}}
-                  {{name.camel}}: {{main.name.singular.camel}}.{{name.original}}{{#isNumber}}.toString(){{/isNumber}},
-                {{/isRelation}}
-                {{^isRelation}}
-                  {{name.camel}}: {{main.name.singular.camel}}.{{name.original}}{{#isSelect}} as {{#options}}"{{option}}"{{#comma}}|{{/comma}}{{/options}}{{/isSelect}},
-                {{/isRelation}}
-              {{/isParent}}
-            {{/isForm}}
-          {{/isPrimary}}
-        {{/main.table.columns}}
-        {{#children}}
-          {{name.plural.camel}}: {{main.name.singular.camel}}.{{table.name.original}}.map(({{name.singular.camel}}) => ({
-              {{#table.columns}}
-                {{#isPrimary}}
-                  {{name.camel}}: {{name.singular.camel}}.{{name.original}}{{#isNumber}}.toString(){{/isNumber}},
-                {{/isPrimary}}
-                {{^isPrimary}}
-                  {{#isForm}}
-                    {{#isParent}}
-                      {{name.camel}}: {{name.singular.camel}}.{{name.original}}{{#isNumber}}?.toString(){{/isNumber}},
-                    {{/isParent}}
-                    {{^isParent}}
-                      {{#isRelation}}
-                        {{name.camel}}: {{name.singular.camel}}.{{name.original}}{{#isNumber}}.toString(){{/isNumber}},
-                      {{/isRelation}}
-                      {{^isRelation}}
-                        {{name.camel}}: {{name.singular.camel}}.{{name.original}}{{#isSelect}} as {{#options}}"{{option}}"{{#comma}}|{{/comma}}{{/options}}{{/isSelect}},
-                      {{/isRelation}}
-                    {{/isParent}}
-                  {{/isForm}}
-                {{/isPrimary}}
-              {{/table.columns}}
-          })),
-        {{/children}}
-      }
     }),
   create: protectedProcedure
     .input(
@@ -344,7 +230,7 @@ export const {{main.name.singular.camel}}Router = createTRPCRouter({
       {{/main.table.form.hasRelated}}
     )
     .mutation(async ({ input, ctx }) => {
-      const {{main.name.singular.camel}} = await ctx.db.{{main.table.name.original}}.create({
+      return await ctx.db.{{main.table.name.camel}}.create({
         data: {
           {{#main.table.columns}}
             {{^isPrimary}}
@@ -378,28 +264,6 @@ export const {{main.name.singular.camel}}Router = createTRPCRouter({
           {{/children}}
         },
       });
-      return {
-        {{#main.table.columns}}
-          {{#isPrimary}}
-            {{name.camel}}: {{main.name.singular.camel}}.{{name.original}}{{#isNumber}}.toString(){{/isNumber}},
-          {{/isPrimary}}
-          {{^isPrimary}}
-            {{#isForm}}
-              {{#isParent}}
-                {{name.camel}}: {{main.name.singular.camel}}.{{name.original}}{{#isNumber}}?.toString(){{/isNumber}},
-              {{/isParent}}
-              {{^isParent}}
-                {{#isRelation}}
-                  {{name.camel}}: {{main.name.singular.camel}}.{{name.original}}{{#isNumber}}.toString(){{/isNumber}},
-                {{/isRelation}}
-                {{^isRelation}}
-                  {{name.camel}}: {{main.name.singular.camel}}.{{name.original}}{{#isSelect}} as {{#options}}"{{option}}"{{#comma}}|{{/comma}}{{/options}}{{/isSelect}},
-                {{/isRelation}}
-              {{/isParent}}
-            {{/isForm}}
-          {{/isPrimary}}
-        {{/main.table.columns}}
-      }
     }),
   update: protectedProcedure
     .input(
@@ -549,7 +413,7 @@ export const {{main.name.singular.camel}}Router = createTRPCRouter({
       {{/main.table.form.hasRelated}}
     )
     .mutation(async ({ input, ctx }) => {
-      const {{main.name.singular.camel}} = await ctx.db.{{main.table.name.original}}.update({
+      return await ctx.db.{{main.table.name.camel}}.update({
         where: { {{main.table.specialColumns.primary.name.original}}: input.{{main.table.specialColumns.primary.name.camel}} },
         data: {
           {{#main.table.columns}}
@@ -585,64 +449,20 @@ export const {{main.name.singular.camel}}Router = createTRPCRouter({
           {{/children}}
         },
       });
-      return {
-        {{#main.table.columns}}
-          {{#isPrimary}}
-            {{name.camel}}: {{main.name.singular.camel}}.{{name.original}}{{#isNumber}}.toString(){{/isNumber}},
-          {{/isPrimary}}
-          {{^isPrimary}}
-            {{#isForm}}
-              {{#isParent}}
-                {{name.camel}}: {{main.name.singular.camel}}.{{name.original}}{{#isNumber}}?.toString(){{/isNumber}},
-              {{/isParent}}
-              {{^isParent}}
-                {{#isRelation}}
-                  {{name.camel}}: {{main.name.singular.camel}}.{{name.original}}{{#isNumber}}.toString(){{/isNumber}},
-                {{/isRelation}}
-                {{^isRelation}}
-                  {{name.camel}}: {{main.name.singular.camel}}.{{name.original}}{{#isSelect}} as {{#options}}"{{option}}"{{#comma}}|{{/comma}}{{/options}}{{/isSelect}},
-                {{/isRelation}}
-              {{/isParent}}
-            {{/isForm}}
-          {{/isPrimary}}
-        {{/main.table.columns}}
-      }
     }),
   delete: protectedProcedure
-    .input(z.string(){{#main.table.specialColumns.primary.isNumber}}.transform((id) => Number.parseInt(id)){{/main.table.specialColumns.primary.isNumber}})
+    .input(z.string().uuid())
     .mutation(async ({ input, ctx }) => {
       {{#main.table.softDelete}}
-        const {{main.name.singular.camel}} = await ctx.db.{{main.table.name.original}}.update({
+        return await ctx.db.{{main.table.name.camel}}.update({
           where: { {{main.table.specialColumns.primary.name.original}}: input },
           data: { deletedAt: new Date() },
         });
       {{/main.table.softDelete}}
       {{^main.table.softDelete}}
-        const {{main.name.singular.camel}} = await ctx.db.{{main.table.name.original}}.delete({
+        return await ctx.db.{{main.table.name.camel}}.delete({
           where: { {{main.table.specialColumns.primary.name.original}}: input },
         });
       {{/main.table.softDelete}}
-      return {
-        {{#main.table.columns}}
-          {{#isPrimary}}
-            {{name.camel}}: {{main.name.singular.camel}}.{{name.original}}{{#isNumber}}.toString(){{/isNumber}},
-          {{/isPrimary}}
-          {{^isPrimary}}
-            {{#isTable}}
-              {{#isParent}}
-                {{name.camel}}: {{main.name.singular.camel}}.{{name.original}}{{#isNumber}}?.toString(){{/isNumber}},
-              {{/isParent}}
-              {{^isParent}}
-                {{#isRelation}}
-                  {{name.camel}}: {{main.name.singular.camel}}.{{name.original}}{{#isNumber}}.toString(){{/isNumber}},
-                {{/isRelation}}
-                {{^isRelation}}
-                  {{name.camel}}: {{main.name.singular.camel}}.{{name.original}}{{#isSelect}} as {{#options}}"{{option}}"{{#comma}}|{{/comma}}{{/options}}{{/isSelect}},
-                {{/isRelation}}
-              {{/isParent}}
-            {{/isTable}}
-          {{/isPrimary}}
-        {{/main.table.columns}}
-      }
     }),
 });

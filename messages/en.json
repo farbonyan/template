@@ -1,6 +1,6 @@
 {
   "global": {
-    "app-name": "Project Management"
+    "app-name": "Template"
   },
   "pages": {
     "error": {
@@ -64,6 +64,11 @@
         "menu": {
           "placeholder": "Search menu items",
           "sign-out": "Sign out"
+        },
+        "profile": {
+          "title": "Edit Profile",
+          "account": "Account",
+          "password": "Password"
         }
       }
     },
@@ -74,6 +79,9 @@
         "drop-here-to-remove": "Drag widgets and drop here to remove them from list"
       }
     },
+    "development": {
+      "title": "Development"
+    },
     "template": {
       "title": "Create Template",
       "toasts": {
@@ -81,6 +89,52 @@
           "success": "Created template successfully",
           "error": "Creating template failed"
         }
+      }
+    },
+    "users": {
+      "title": "Users",
+      "table": {
+        "columns": {
+          "id": "Id",
+          "name": "Name",
+          "username": "Username",
+          "position": "Position",
+          "created-at": "Created At",
+          "updated-at": "Updated At"
+        },
+        "aggregations": {
+          "count": "Count: {count, number}"
+        },
+        "actions": {
+          "edit": "Edit",
+          "delete": {
+            "name": "Delete",
+            "confirmation": {
+              "title": "Delete {name}",
+              "message": "Are you sure you want to delete \"{name}\"?",
+              "yes": "Yes",
+              "no": "No"
+            }
+          }
+        }
+      },
+      "toasts": {
+        "create": {
+          "success": "Created user successfully",
+          "error": "Creating user failed"
+        },
+        "update": {
+          "success": "Updated user details successfully",
+          "error": "Updating user details failed"
+        },
+        "delete": {
+          "success": "Deleted user successfully",
+          "error": "Deleting user failed"
+        }
+      },
+      "single": {
+        "create-title": "Create new user",
+        "update-title": "Update user \"{name}\""
       }
     }
   },
@@ -90,8 +144,8 @@
       "submit": "Submit"
     },
     "login": {
-      "username": "username",
-      "password": "password",
+      "username": "Username",
+      "password": "Password",
       "submit": "Submit"
     },
     "template": {
@@ -144,6 +198,79 @@
         "form": "Form",
         "type": "Type",
         "extra": "Extra"
+      }
+    },
+    "user": {
+      "name": {
+        "label": "Name",
+        "placeholder": "Please enter name"
+      },
+      "username": {
+        "label": "Username",
+        "placeholder": "Please enter username"
+      },
+      "position": {
+        "label": "Position",
+        "placeholder": "Please enter position"
+      },
+      "password": {
+        "label": "Password",
+        "placeholder": "Please enter password"
+      }
+    },
+    "profile": {
+      "name": {
+        "label": "Name",
+        "placeholder": "Please enter name"
+      },
+      "username": {
+        "label": "Username",
+        "placeholder": "Please enter username"
+      },
+      "position": {
+        "label": "Position",
+        "placeholder": "Please enter position"
+      },
+      "cancel": "Cancel",
+      "submit": "Submit"
+    },
+    "password": {
+      "current-password": {
+        "label": "Current Password",
+        "placeholder": "Please enter current password"
+      },
+      "password": {
+        "label": "New Password",
+        "placeholder": "Please enter new password",
+        "hints": {
+          "min-length": "Should at least be 6 characters",
+          "lower-chars": "Should contain lower characters",
+          "upper-chars": "Should contain upper characters",
+          "numbers": "Should contain numbers",
+          "special-chars": "Should contain special characters: #?!@$%^&*-"
+        }
+      },
+      "confirm-password": {
+        "label": "Repeat New Password",
+        "placeholder": "Please repeat new password"
+      },
+      "cancel": "Cancel",
+      "submit": "Submit"
+    }
+  },
+  "widgets": {
+    "events": {
+      "title": "Events",
+      "create-title": "Create new event",
+      "update-title": "Update event \"{name}\"",
+      "create": {
+        "error": "Creating event failed"
+      },
+      "update": {
+        "error": "Updating event details failed"
+      },
+      "delete": {
+        "error": "Deleting event failed"
       }
     }
   },

@@ -1,7 +1,12 @@
 "use client";
 
 import * as React from "react";
-import { ClipboardListIcon, LayoutDashboardIcon } from "lucide-react";
+import {
+  CircleUserIcon,
+  ClipboardListIcon,
+  FileImageIcon,
+  LayoutDashboardIcon,
+} from "lucide-react";
 import { useTranslations } from "next-intl";
 
 import { z } from "~/lib/zod";
@@ -9,7 +14,13 @@ import {
   DashboardTab,
   dashboardTabProps,
 } from "~/tabs/dashboard/dashboard-tab";
+import {
+  DocumentPreviewTab,
+  documentPreviewTabProps,
+} from "~/tabs/preview/preview";
 import { TemplateTab } from "~/tabs/template/template-tab";
+import { UserTab, userTabProps } from "~/tabs/users/user-tab";
+import { UsersTab } from "~/tabs/users/users-tab";
 
 const createTab = <Params, Result>(config: {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -47,6 +58,13 @@ export const useTabPages = () => {
           title: () => t("pages.index.title"),
           component: () => <DashboardTab />,
         }),
+        preview: createTab({
+          params: documentPreviewTabProps,
+          return: z.void(),
+          icon: () => FileImageIcon,
+          title: (params) => params.document.name,
+          component: (params) => <DocumentPreviewTab {...params} />,
+        }),
         ...createGroup("template", {
           create: createTab({
             params: z.undefined(),
@@ -56,6 +74,29 @@ export const useTabPages = () => {
               return t("pages.template.title");
             },
             component: () => <TemplateTab />,
+          }),
+        }),
+        ...createGroup("users", {
+          list: createTab({
+            params: z.undefined(),
+            return: z.void(),
+            icon: () => CircleUserIcon,
+            title: () => t("pages.users.title"),
+            component: () => <UsersTab />,
+          }),
+          single: createTab({
+            params: userTabProps,
+            return: z.string(),
+            icon: () => CircleUserIcon,
+            title: (params) => {
+              if (params.user) {
+                return t("pages.users.single.update-title", {
+                  name: params.user.name,
+                });
+              }
+              return t("pages.users.single.create-title");
+            },
+            component: (params) => <UserTab {...params} />,
           }),
         }),
       }) as const,

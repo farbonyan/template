@@ -2,9 +2,8 @@ import * as React from "react";
 import { useFormatter, useTranslations } from "next-intl";
 import { z } from "~/lib/zod";
 
-import type { DefaultValues } from "~/components/ui/form";
 {{#isComplex}}
-  import type { UseFormReturn } from "react-hook-form";
+  import type { UseFormReturn, DefaultValues } from "~/components/ui/form";
   import type { DragEndEvent } from "@dnd-kit/core";
   import { GripVerticalIcon, PlusIcon, Trash2Icon } from "lucide-react";
   import {
@@ -31,6 +30,9 @@ import type { DefaultValues } from "~/components/ui/form";
     TableRow,
   } from "~/components/ui/table";
   import { Button } from "~/components/ui/button";
+{{/isComplex}}
+{{^isComplex}}
+  import type { DefaultValues } from "~/components/ui/form";
 {{/isComplex}}
 import { FormWrapper } from "~/components/forms/form-wrapper";
 import {
@@ -474,7 +476,7 @@ export type {{main.name.singular.pascal}}Schema = z.infer<typeof {{main.name.sin
     return (
       <FormField
         control={form.control}
-        name={"{{name.plural.camel}}"}
+        name="{{name.plural.camel}}"
         render={() => (
           <FormItem className="flex h-full flex-col overflow-hidden p-1">
             <FormLabel>{t("{{name.plural.kebab}}.label")}</FormLabel>
@@ -490,7 +492,7 @@ export type {{main.name.singular.pascal}}Schema = z.infer<typeof {{main.name.sin
                       <TableRow>
                         <TableHead colSpan={2}>
                           <Button type="button" size="icon" className="size-6" onClick={() => {
-                            {{name.plural.camel}}Field.prepend({
+                            {{name.plural.camel}}Field.append({
                               {{#table.columns}}
                                 {{#isForm}}
                                   {{^isPrimary}}

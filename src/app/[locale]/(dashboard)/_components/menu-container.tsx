@@ -10,7 +10,6 @@ import { Button } from "~/components/ui/button";
 import { DebouncedTextInput } from "~/components/ui/debounced-text-input";
 import { ScrollArea } from "~/components/ui/scroll-area";
 import { Separator } from "~/components/ui/separator";
-import { useTheme } from "~/components/ui/theme";
 import { useSetting } from "~/contexts/settings";
 import { useMenuItems } from "~/contexts/systems";
 import { useResponsive } from "~/hooks/responsive";
@@ -34,7 +33,6 @@ export const MenuContainer = ({ children, className }: MenuContainerProps) => {
   const t = useTranslations("pages.index.header");
   const session = useSession();
   const { isLgDown } = useResponsive();
-  const { resolvedTheme } = useTheme();
   const [displayMenu] = useSetting("displayMenu");
   const { isMdUp } = useResponsive();
   const menuItems = useMenuItems();
@@ -47,11 +45,11 @@ export const MenuContainer = ({ children, className }: MenuContainerProps) => {
   return (
     <div className="flex h-full">
       {showMenu && (
-        <div className="z-10 flex w-1/6 min-w-60 flex-col overflow-hidden bg-background pb-3 shadow-sm">
-          <ScrollArea className="flex-1 ~p-2/4 [&>div>div]:!block">
+        <div className="z-10 flex w-1/6 min-w-60 flex-col overflow-hidden bg-background pb-6 shadow-sm">
+          <ScrollArea className="~p-2/4 flex-1 [&>div>div]:!block">
             {session.status === "authenticated" && (
               <>
-                <Profile session={session.data} />
+                <Profile />
                 <Separator className="my-8" />
               </>
             )}
@@ -85,18 +83,12 @@ export const MenuContainer = ({ children, className }: MenuContainerProps) => {
             )}
           </ScrollArea>
           <Image
-            src={
-              resolvedTheme === "dark"
-                ? "/img/app-logo-dark.png"
-                : "/img/app-logo-light.png"
-            }
-            alt="logo"
-            unoptimized
             priority
-            width="400"
-            height="200"
-            sizes="100vw"
-            className="mx-auto h-32 w-auto"
+            src="/img/crm.png"
+            alt="logo"
+            width={800}
+            height={800}
+            className="mx-auto aspect-auto w-24"
           />
         </div>
       )}

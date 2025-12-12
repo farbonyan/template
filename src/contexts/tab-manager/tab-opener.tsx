@@ -35,8 +35,8 @@ export const useTabOpener = () => {
           `Invalid params for ${name} tab: ${validation.error.message}`,
         );
       }
-      const [pageIcon, pageTitle, pageComponent] = await Promise.all([
-        page.icon(params as never),
+      const pageIcon = page.icon(params as never);
+      const [pageTitle, pageComponent] = await Promise.all([
         page.title(params as never),
         page.component(params as never),
       ]);

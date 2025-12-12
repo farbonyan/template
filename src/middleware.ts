@@ -48,7 +48,7 @@ export default function middleware(req: NextRequest) {
 
   if (!token) {
     const signInUrl = new URL(`/${locale}/auth/signin`, req.url);
-    signInUrl.searchParams.set("callbackUrl", req.nextUrl.pathname);
+    // signInUrl.searchParams.set("callbackUrl", req.nextUrl.pathname);
     return Response.redirect(signInUrl);
   }
 

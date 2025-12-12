@@ -53,7 +53,8 @@ const multiSelectVariants = cva(
  * Props for MultiSelect component
  */
 interface MultiSelectProps
-  extends React.ButtonHTMLAttributes<HTMLButtonElement>,
+  extends
+    React.ButtonHTMLAttributes<HTMLButtonElement>,
     VariantProps<typeof multiSelectVariants> {
   /**
    * An array of option objects to be displayed in the multi-select component.
@@ -67,6 +68,9 @@ interface MultiSelectProps
     /** Optional icon component to display alongside the option. */
     icon?: React.ComponentType<{ className?: string }>;
   }[];
+
+  /** The selected values. */
+  value: string[];
 
   /**
    * Callback function triggered when the selected values change.
@@ -123,9 +127,10 @@ const MultiSelect = React.forwardRef<HTMLButtonElement, MultiSelectProps>(
   (
     {
       options,
+      // defaultValue = [],
+      value: selectedValues,
       onValueChange,
       variant,
-      defaultValue = [],
       placeholder,
       animation = 0,
       maxCount = 3,
@@ -138,14 +143,14 @@ const MultiSelect = React.forwardRef<HTMLButtonElement, MultiSelectProps>(
     ref,
   ) => {
     const t = useTranslations("components.multiselect");
-    const [selectedValues, setSelectedValues] =
-      React.useState<string[]>(defaultValue);
+    // const [selectedValues, setSelectedValues] =
+    //   React.useState<string[]>(defaultValue);
     const [isPopoverOpen, setIsPopoverOpen] = React.useState(false);
     const [isAnimating, setIsAnimating] = React.useState(false);
 
-    React.useEffect(() => {
-      setSelectedValues(defaultValue);
-    }, [defaultValue]);
+    // React.useEffect(() => {
+    //   setSelectedValues(defaultValue);
+    // }, [defaultValue]);
 
     const handleInputKeyDown = (
       event: React.KeyboardEvent<HTMLInputElement>,
@@ -153,27 +158,34 @@ const MultiSelect = React.forwardRef<HTMLButtonElement, MultiSelectProps>(
       if (event.key === "Enter") {
         setIsPopoverOpen(true);
       } else if (event.key === "Backspace" && !event.currentTarget.value) {
-        setSelectedValues((selectedValues) => {
-          const newSelectedValues = [...selectedValues];
-          newSelectedValues.pop();
-          onValueChange?.(newSelectedValues);
-          return newSelectedValues;
-        });
+        const newSelectedValues = [...selectedValues];
+        newSelectedValues.pop();
+        onValueChange?.(newSelectedValues);
+        // setSelectedValues((selectedValues) => {
+        //   const newSelectedValues = [...selectedValues];
+        //   newSelectedValues.pop();
+        //   onValueChange?.(newSelectedValues);
+        //   return newSelectedValues;
+        // });
       }
     };
 
     const toggleOption = (option: string) => {
-      setSelectedValues((selectedValues) => {
-        const newSelectedValues = selectedValues.includes(option)
-          ? selectedValues.filter((value) => value !== option)
-          : [...selectedValues, option];
-        onValueChange?.(newSelectedValues);
-        return newSelectedValues;
-      });
+      const newSelectedValues = selectedValues.includes(option)
+        ? selectedValues.filter((v) => v !== option)
+        : [...selectedValues, option];
+      onValueChange?.(newSelectedValues);
+      // setSelectedValues((selectedValues) => {
+      //   const newSelectedValues = selectedValues.includes(option)
+      //     ? selectedValues.filter((value) => value !== option)
+      //     : [...selectedValues, option];
+      //   onValueChange?.(newSelectedValues);
+      //   return newSelectedValues;
+      // });
     };
 
     const handleClear = () => {
-      setSelectedValues([]);
+      // setSelectedValues([]);
       onValueChange?.([]);
     };
 
@@ -182,21 +194,29 @@ const MultiSelect = React.forwardRef<HTMLButtonElement, MultiSelectProps>(
     };
 
     const clearExtraOptions = () => {
-      setSelectedValues((selectedValues) => {
-        const newSelectedValues = selectedValues.slice(0, maxCount);
-        onValueChange?.(newSelectedValues);
-        return newSelectedValues;
-      });
+      const newSelectedValues = selectedValues.slice(0, maxCount);
+      onValueChange?.(newSelectedValues);
+      // setSelectedValues((selectedValues) => {
+      //   const newSelectedValues = selectedValues.slice(0, maxCount);
+      //   onValueChange?.(newSelectedValues);
+      //   return newSelectedValues;
+      // });
     };
 
     const toggleAll = () => {
       if (selectedValues.length === options.length) {
         handleClear();
       } else {
-        const allValues = options.map((option) => option.value);
-        setSelectedValues(allValues);
-        onValueChange?.(allValues);
+        const newSelectedValues = options.map((option) => option.value);
+        onValueChange?.(newSelectedValues);
       }
+      // if (selectedValues.length === options.length) {
+      //   handleClear();
+      // } else {
+      //   const allValues = options.map((option) => option.value);
+      //   setSelectedValues(allValues);
+      //   onValueChange?.(allValues);
+      // }
     };
 
     return (

@@ -1,8 +1,13 @@
 import { prisma } from "./prisma";
-import { seedUsers } from "./user";
+import { seedUser } from "./user";
 
 export const main = async () => {
-  await seedUsers();
+  await seedUser({
+    name: "Developer",
+    username: "dvlpr",
+    password: "fis@1404",
+    position: "CTO",
+  });
 };
 
 main()

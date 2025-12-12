@@ -10,14 +10,14 @@ import { api } from "~/trpc/react";
 export const {{main.name.singular.camel}}TabProps = z.object({
   {{main.name.singular.camel}}: z
     .object({
-      id: z.string(),
+      id: z.string().uuid(),
       name: z.string().trim().min(1),
     })
     .optional(),
   {{#main.table.tree}}
     parent: z
       .object({
-        id: z.string(),
+        id: z.string().uuid(),
         name: z.string().trim().min(1),
       })
       .optional(),
@@ -45,7 +45,9 @@ export const {{main.name.singular.pascal}}Tab = ({
   {{#main.table.columns}}
     {{#isForm}}
       {{#isRelation}}
-        const get{{relation.table.pascal}}DropdownQuery = api.{{relation.table.camel}}.dropdown.useQuery();
+        const get{{relation.table.pascal}}DropdownQuery = api.{{relation.table.camel}}.dropdown.useQuery(undefined, {
+          refetchOnWindowFocus: false,
+        });
       {{/isRelation}}
     {{/isForm}}
   {{/main.table.columns}}
@@ -53,7 +55,9 @@ export const {{main.name.singular.pascal}}Tab = ({
     {{#table.columns}}
       {{#isForm}}
         {{#isRelation}}
-          const get{{relation.table.pascal}}DropdownQuery = api.{{relation.table.camel}}.dropdown.useQuery();
+          const get{{relation.table.pascal}}DropdownQuery = api.{{relation.table.camel}}.dropdown.useQuery(undefined, {
+            refetchOnWindowFocus: false,
+          });
         {{/isRelation}}
       {{/isForm}}
     {{/table.columns}}
@@ -61,7 +65,10 @@ export const {{main.name.singular.pascal}}Tab = ({
   const create{{main.name.singular.pascal}}Mutation = api.{{main.name.singular.camel}}.create.useMutation({
     onSuccess: async (data) => {
       toast.success(t("toasts.create.success"));
-      await utils.{{main.name.singular.camel}}.all.invalidate();
+      await Promise.all([
+        utils.{{main.name.singular.camel}}.all.invalidate(),
+        utils.{{main.name.singular.camel}}.dropdown.invalidate(),
+      ]);
       closeSelf(data.{{main.table.specialColumns.primary.name.camel}});
     },
     onError: () => {
@@ -73,6 +80,7 @@ export const {{main.name.singular.pascal}}Tab = ({
       toast.success(t("toasts.update.success"));
       await Promise.all([
         utils.{{main.name.singular.camel}}.all.invalidate(),
+        utils.{{main.name.singular.camel}}.dropdown.invalidate(),
         utils.{{main.name.singular.camel}}.single.invalidate(data.{{main.table.specialColumns.primary.name.camel}}),
       ]);
       closeSelf(data.{{main.table.specialColumns.primary.name.camel}});

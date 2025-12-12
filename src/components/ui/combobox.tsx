@@ -38,7 +38,7 @@ type ComboboxProps = {
   options: Option[];
 
   /** Selected value */
-  value: string | undefined;
+  value: string | null | undefined;
 
   /** Value is invalid */
   invalid?: boolean;

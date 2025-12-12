@@ -1,8 +1,8 @@
 import { z } from "~/lib/zod";
 
 export const tableColumnSchema = z.object({
-  name: z.string(),
-  type: z.string(),
+  name: z.string().trim(),
+  type: z.string().trim(),
   optional: z.boolean(),
   description: z.string().nullable(),
   order: z.number(),
@@ -13,7 +13,7 @@ export const tableColumnSchema = z.object({
 export type TableColumnSchema = z.infer<typeof tableColumnSchema>;
 
 export const tableSchema = z.object({
-  name: z.string(),
+  name: z.string().trim(),
   columns: tableColumnSchema.array(),
 });
 

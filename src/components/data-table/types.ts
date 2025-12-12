@@ -38,7 +38,8 @@ declare module "@tanstack/table-core" {
   }
 
   interface Row<TData extends RowData>
-    extends CoreRow<TData>,
+    extends
+      CoreRow<TData>,
       VisibilityRow<TData>,
       ColumnPinningRow<TData>,
       RowPinningRow,

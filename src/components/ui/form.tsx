@@ -7,6 +7,7 @@ import type {
   FieldValues,
   FormProviderProps,
   UseFormProps,
+  UseFormReturn,
 } from "react-hook-form";
 import * as React from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -16,6 +17,7 @@ import {
   Controller,
   FormProvider,
   useFormContext,
+  useWatch,
 } from "react-hook-form";
 
 import type { ZodType } from "~/lib/zod";
@@ -217,7 +219,10 @@ export {
   useForm,
   useFormContext,
   useFormField,
+  useWatch,
   type FormProps,
+  type UseFormProps,
+  type UseFormReturn,
 };
 
 export { useFieldArray } from "react-hook-form";

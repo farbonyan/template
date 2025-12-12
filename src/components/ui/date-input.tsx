@@ -2,7 +2,7 @@
 
 import * as React from "react";
 import { CalendarIcon } from "lucide-react";
-import { useFormatter, useLocale, useNow, useTranslations } from "next-intl";
+import { useLocale, useNow, useTranslations } from "next-intl";
 import DateObject from "react-date-object";
 import Toolbar from "react-multi-date-picker/plugins/toolbar";
 
@@ -20,6 +20,7 @@ import { TextInput } from "./text-input";
 type DateInputProps = Omit<SingleCalendarProps, "onChange"> &
   React.AriaAttributes & {
     time?: boolean;
+    seconds?: boolean;
     placeholder?: string;
     onChange?: (value: Date | null) => void;
   };
@@ -27,12 +28,12 @@ type DateInputProps = Omit<SingleCalendarProps, "onChange"> &
 const DateInput = ({
   placeholder,
   time,
+  seconds,
   value,
   onChange,
   ...props
 }: DateInputProps) => {
   const t = useTranslations("components.date-input");
-  const formatter = useFormatter();
   const isTouch = useMediaQuery("(pointer: coarse)");
   const now = useNow();
   const locale = useLocale();
@@ -43,8 +44,14 @@ const DateInput = ({
   const [stringDate, setStringDate] = React.useState(
     value
       ? time
-        ? `${formatter.dateTime(value, "time")} - ${formatter.dateTime(value, "date")}`
-        : formatter.dateTime(value, "date")
+        ? new DateObject({
+            date: value,
+            ...getCalendarAndLocale(locale),
+          }).format("HH:mm - YYYY/MM/DD")
+        : new DateObject({
+            date: value,
+            ...getCalendarAndLocale(locale),
+          }).format("YYYY/MM/DD")
       : "",
   );
 
@@ -62,9 +69,11 @@ const DateInput = ({
           className="w-full px-2 *:w-full *:flex-1 *:text-nowrap"
           position="bottom"
         />,
-        time ? <TimePicker position="bottom" /> : undefined,
+        time ? (
+          <TimePicker position="bottom" hideSeconds={!seconds} />
+        ) : undefined,
       ].filter((plugin) => typeof plugin !== "undefined"),
-    [now, t, time],
+    [now, t, time, seconds],
   );
 
   return (
@@ -107,11 +116,10 @@ const DateInput = ({
               return;
             }
             setError(false);
-            const d = parsedDate.toDate();
             setStringDate(
               time
-                ? `${formatter.dateTime(d, "time")} - ${formatter.dateTime(d, "date")}`
-                : formatter.dateTime(d, "date"),
+                ? parsedDate.format("HH:mm - YYYY/MM/DD")
+                : parsedDate.format("YYYY/MM/DD"),
             );
             onChange?.(parsedDate.toDate());
           }}
@@ -141,8 +149,8 @@ const DateInput = ({
               const d = date.toDate();
               setStringDate(
                 time
-                  ? `${formatter.dateTime(d, "time")} - ${formatter.dateTime(d, "date")}`
-                  : formatter.dateTime(d, "date"),
+                  ? date.format("HH:mm - YYYY/MM/DD")
+                  : date.format("YYYY/MM/DD"),
               );
               onChange?.(d);
             }}

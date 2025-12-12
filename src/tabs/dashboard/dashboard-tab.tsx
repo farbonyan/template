@@ -15,7 +15,7 @@ export type DashboardTabProps = z.infer<typeof dashboardTabProps>;
  * Dashboard's tab
  */
 export const DashboardTab = () => {
-  const [widgets, setWidgets] = useSetting("widgets");
+  const [widgets, setWidgets] = useSetting("widgets", [["events-scheduler"]]);
   const [editing, setEditing] = useSearchParamState("editingWidgets");
 
   return (

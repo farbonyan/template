@@ -1,5 +1,4 @@
 import type { DragEndEvent } from "@dnd-kit/core";
-import type { UseFormReturn } from "react-hook-form";
 import * as React from "react";
 import {
   closestCenter,
@@ -24,9 +23,8 @@ import {
   Trash2Icon,
 } from "lucide-react";
 import { useTranslations } from "next-intl";
-import { useFieldArray } from "react-hook-form";
 
-import type { DefaultValues } from "~/components/ui/form";
+import type { DefaultValues, UseFormReturn } from "~/components/ui/form";
 import type { ColumnSchema } from "~/server/api/schema/column";
 import type { TableSchema } from "~/server/api/schema/table";
 import type { TemplateSchema } from "~/server/api/schema/template";
@@ -48,6 +46,7 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
+  useFieldArray,
   useForm,
 } from "~/components/ui/form";
 import { Label } from "~/components/ui/label";
@@ -126,10 +125,10 @@ const ColumnExtra = ({
               <FormItem>
                 <TagInput
                   {...field}
-                  tags={value}
+                  tags={value ?? []}
                   setTags={(updater) =>
                     typeof updater === "function"
-                      ? onChange(updater(value))
+                      ? onChange(updater(value ?? []))
                       : onChange(updater)
                   }
                 />
@@ -340,7 +339,7 @@ const SortableRow = ({
                 case "none":
                   form.setValue(
                     `${name}.table.columns`,
-                    form.getValues(`${name}.table.columns`).map((c, i) =>
+                    form.getValues(`${name}.table.columns`)?.map((c, i) =>
                       i === index
                         ? {
                             ...c,
@@ -355,7 +354,7 @@ const SortableRow = ({
                 case "primary":
                   form.setValue(
                     `${name}.table.columns`,
-                    form.getValues(`${name}.table.columns`).map((c, i) => ({
+                    form.getValues(`${name}.table.columns`)?.map((c, i) => ({
                       ...c,
                       primary: i === index ? true : false,
                     })),
@@ -364,7 +363,7 @@ const SortableRow = ({
                 case "parent":
                   form.setValue(
                     `${name}.table.columns`,
-                    form.getValues(`${name}.table.columns`).map((c, i) => ({
+                    form.getValues(`${name}.table.columns`)?.map((c, i) => ({
                       ...c,
                       parent: i === index ? true : false,
                     })),
@@ -373,7 +372,7 @@ const SortableRow = ({
                 case "title":
                   form.setValue(
                     `${name}.table.columns`,
-                    form.getValues(`${name}.table.columns`).map((c, i) => ({
+                    form.getValues(`${name}.table.columns`)?.map((c, i) => ({
                       ...c,
                       title: i === index ? true : false,
                     })),
@@ -519,7 +518,7 @@ const SortableRow = ({
           render={({ field }) => {
             const related = form
               .getValues(`${name}.table.columns`)
-              .find((column) => column.name === field.value?.field);
+              ?.find((column) => column.name === field.value?.field);
             return (
               <FormItem>
                 <div className="flex items-center gap-2">
@@ -782,7 +781,7 @@ const TableField = ({
               name={name}
               form={form}
               tables={tables}
-              columns={columns}
+              columns={columns ?? []}
             />
             <FormMessage />
           </FormItem>

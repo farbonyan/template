@@ -10,7 +10,7 @@ import { isRtlLang } from "rtl-detect";
  */
 export const useIsRtl = (locale?: string) => {
   const defaultLocale = useLocale();
-  if (!locale) locale = defaultLocale;
+  locale ??= defaultLocale;
 
   return React.useMemo(() => {
     return isRtlLang(locale);

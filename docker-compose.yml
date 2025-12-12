@@ -1,19 +1,70 @@
 services:
-  app:
+  web:
+    container_name: web
     build:
-      context: app
+      context: .
       dockerfile: Dockerfile
+    dns:
+      - 8.8.8.8
+      - 1.1.1.1
     volumes:
-      - db:prisma/database.db
-    ports:
-      - "3000:3000"
+      - ./prisma:/app/prisma
     env_file:
       - .env
+    restart: always
     networks:
-      - app
+      - app_network
+
+  certbot:
+    image: certbot/certbot:v2.4.0
+    container_name: certbot
+    volumes:
+      - certbot-www:/var/www/certbot
+      - certbot-conf:/etc/letsencrypt
+    networks:
+      - app_network
+    command: >
+      certonly
+      --webroot
+      --webroot-path /var/www/certbot
+      --email shakeri_r@farbonyan.com
+      --agree-tos
+      --no-eff-email
+      -d project.farbonyan.com
+
+  certbot-renew:
+    image: certbot/certbot:v2.4.0
+    volumes:
+      - certbot-www:/var/www/certbot
+      - certbot-conf:/etc/letsencrypt
+    entrypoint: ["sh", "-c"]
+    command: >
+      certbot
+      renew
+      --webroot
+      --webroot-path /var/www/certbot
+    networks:
+      - app_network
+
+  nginx:
+    image: nginx:latest
+    container_name: nginx
+    ports:
+      - "80:80"
+      - "443:443"
+    depends_on:
+      - web
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf
+      - certbot-www:/var/www/certbot
+      - certbot-conf:/etc/letsencrypt
+    networks:
+      - app_network
+    restart: always
 
 networks:
-  app:
+  app_network:
 
 volumes:
-  db:
+  certbot-www:
+  certbot-conf:

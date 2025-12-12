@@ -12,5 +12,9 @@ export const formats: Partial<Formats> = {
       minute: "2-digit",
       second: "2-digit",
     },
+    hm: {
+      hour: "2-digit",
+      minute: "2-digit",
+    },
   },
 };

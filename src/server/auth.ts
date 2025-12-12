@@ -1,4 +1,4 @@
-import type { DefaultSession, NextAuthOptions } from "next-auth";
+import type { DefaultSession, NextAuthOptions, Session } from "next-auth";
 import { PrismaAdapter } from "@auth/prisma-adapter";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
@@ -34,19 +34,28 @@ export const authOptions: NextAuthOptions = {
         user: {
           ...session.user,
           id: token.sub,
+          name: token.name,
           username: token.username,
           position: token.position,
+          image: token.picture,
           accessToken: jwt.sign(token.sub ?? "", env.NEXTAUTH_SECRET),
         },
       };
     },
-    jwt: ({ token, user }) => {
-      if (typeof user === "undefined") return token;
-      return {
-        ...token,
-        username: user.username,
-        position: user.position,
-      };
+    async jwt({ token, user, trigger, session }) {
+      if (typeof user !== "undefined") {
+        token.username = user.username;
+        token.position = user.position;
+        token.name = user.name;
+        token.picture = user.image;
+      }
+      const _session = session as Session | undefined;
+      if (trigger === "update" && _session?.user) {
+        if (_session.user.name !== undefined) token.name = _session.user.name;
+        if (_session.user.image !== undefined)
+          token.picture = _session.user.image;
+      }
+      return token;
     },
   },
   session: {
@@ -77,6 +86,14 @@ export const authOptions: NextAuthOptions = {
         if (!credentials) return null;
 
         const user = await db.user.findFirst({
+          select: {
+            id: true,
+            name: true,
+            username: true,
+            position: true,
+            password: true,
+            avatar: { select: { id: true } },
+          },
           where: {
             username: {
               equals: credentials.username,
@@ -99,6 +116,7 @@ export const authOptions: NextAuthOptions = {
           name: user.name,
           username: user.username,
           position: user.position,
+          image: user.avatar ? `/api/attachments/${user.avatar.id}` : undefined,
         };
       },
     }),
